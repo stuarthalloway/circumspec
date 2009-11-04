@@ -1,13 +1,21 @@
 (ns base-spec
-  (:use clojure.test))
+  (:use clojure.test
+        clojure.contrib.pprint))
+
+(defmacro wtf [form]
+  `(pprint (macroexpand-1 '~form)))
 
 (defmulti
   reorder
   (fn [args]
     (cond
+     (= 2 (count args)) :predicate
      (= 3 (count args)) :positive
      (and (= 4 (count args)) (= 'not (second args))) :negative
      :default (throw (RuntimeException. "Rats! You sank my battleship")))))
+
+(defmethod reorder :predicate [[input predicate]]
+  `(is (~predicate ~input)))
 
 (defmethod reorder :positive [[actual f expected]]
   `(is
@@ -36,19 +44,20 @@
 ;;        (let [curvy-glyph? ...]
 ;;          (2 should have curvy-glyph))
 ;;        (2 should not = 3 ...)
+;;        ([1 2] should contain 1)
 ;;        (2 should = 2)
 ;;        (2 should be #(< 1 % 3))
 ;;        (2 should be (fn [x] (< 1 x 3)))
 ;;        ((< 1 2 3) should be true)
 ;;        (2 should be numeric)
 ;;        ([1 2] should =set [2 1])
-;;        (2/1 should not fail)
-;;        (2/0 should fail)
-;;        (2/0 should fail-with ArithmeticException)
-;;        (2/0 should fail-with ArithmeticException "divide by zero"
-;;             (2/0 should fail-with "divide by zero"
-;;                  (2/0 should fail-with ArithmeticException #"zero"))          
-;;             (2/0 should fail-with #"zero")))
+;;        (safe! should not fail)
+;;        (burp! should fail)
+;;        (burp! should fail-with ArithmeticException)
+;;        (burp! should fail-with ArithmeticException "divide by zero"
+;;             (burp! should fail-with "divide by zero"
+;;                  (burp! should fail-with ArithmeticException #"zero"))          
+;;             (burp! should fail-with #"zero")))
  
  
 ;;    (it "is possible to do a multiple assertion"
