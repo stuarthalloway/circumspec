@@ -1,14 +1,29 @@
 (ns circumspec-test
-  (:use clojure.test))
+  (:use circumspec))
 
-(deftest good-old-fashioned-fucking-fn
-  (it "can do basic things"
-      (2 should = 2)
-      (3 should not = 2)
-      (2 should be = 2)
-      (2 should be #(< 1 % 3))
-      (2 should be integer)
-      (2 should be (fn [x] (< 1 x 3)))))
+(describe
+ "good old fashioned fucking fn"
+ (it
+  "can do basic things"
+  (2 should = 2)
+  (3 should not = 2)
+  (2 should be = 2)
+  (2 should be #(< 1 % 3))
+  (2 should be integer)
+  (2 should be (fn [x] (< 1 x 3)))))
+
+(describe
+ "it looks better when described"
+ (it
+  "also works inside describe"
+  (3 should = 3)
+  ((+ 1 42) should = 43)))
+
+
+(describe
+ "failures"
+ (it "should raise an exception"
+     ((/ 3 0) should throw ArithmeticException)))
 
 ;; (comment
 ;;   "these will work"

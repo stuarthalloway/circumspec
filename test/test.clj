@@ -12,7 +12,8 @@
     (file-seq (java.io.File. "test")))))
 
 (defn run-tests! []
-  (doseq [f (test-files)]
-    (println f)
-    (load (re-sub #".clj" "" f))
-    (run-tests)))
+  (let [names (map #(re-sub #".clj" "" %) (test-files))]
+    (doseq [f names]
+      (println f)
+      (load f))
+    (apply run-tests (map #(symbol (re-sub #"_" "-" %)) names))))
