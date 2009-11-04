@@ -1,39 +1,14 @@
-(ns base-spec
-  (:use clojure.test
-        clojure.contrib.pprint))
+(ns circumspec-test
+  (:use clojure.test))
 
-(defmacro wtf [form]
-  `(pprint (macroexpand-1 '~form)))
-
-(defmulti
-  reorder
-  (fn [args]
-    (cond
-     (= 2 (count args)) :predicate
-     (= 3 (count args)) :positive
-     (and (= 4 (count args)) (= 'not (second args))) :negative
-     :default (throw (RuntimeException. "Rats! You sank my battleship")))))
-
-(defmethod reorder :predicate [[input predicate]]
-  `(is (~predicate ~input)))
-
-(defmethod reorder :positive [[actual f expected]]
-  `(is
-    (~f ~actual ~expected)))
-
-(defmethod reorder :negative [[actual skipnot f expected]]
-  `(is
-    (not (~f ~actual ~expected))))
-
-(def junk-words #{'should 'be})
-
-(defn polish [args]
-  (reorder (remove junk-words args)))
-
-(defmacro it [desc & forms]
-  `(do
-     (testing ~desc
-              ~@(map polish forms))))
+(deftest good-old-fashioned-fucking-fn
+  (it "can do basic things"
+      (2 should = 2)
+      (3 should not = 2)
+      (2 should be = 2)
+      (2 should be #(< 1 % 3))
+      (2 should be integer)
+      (2 should be (fn [x] (< 1 x 3)))))
 
 ;; (comment
 ;;   "these will work"
@@ -75,3 +50,4 @@
 ;;   (should (+ 1 1) 2)
 ;;   (2 should be (< 1 % 3))   ;;hmmm....
 ;;   (2 should be x (< 1 x 3)) ;;hmmm....)
+
