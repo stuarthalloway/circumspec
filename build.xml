@@ -6,7 +6,7 @@
   <property name="build.dir" location="classes"/>
   <property name="source.dir" location="src"/>
   <property name="clojure.jar" location="lib/clojure.jar"/>
-  <property name="clojure-contrib.jar" location="lib/clojure-contrib.jar"/>
+  <property name="contrib.jar" location="lib/clojure-contrib.jar"/>
   <property name="jar.name" location="circumspec.jar"/>
   <property file="local.properties"/>
   <available property="hasclojure" file="${clojure.jar}"/>
@@ -40,8 +40,7 @@
         <path location="${source.dir}"/>
       </classpath>
       <sysproperty key="clojure.compile.path" value="${build.dir}"/>
-      <arg value="clojure.http.client"/>
-      <arg value="clojure.http.resourcefully"/>
+      <arg value="circumspec.ExpectationException"/>
     </java>
   </target>
 
