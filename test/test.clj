@@ -15,6 +15,5 @@
   (reset! circumspec/registered-descriptions [])
   (let [names (map #(re-sub #".clj" "" %) (test-files))]
     (doseq [f names]
-      (println f)
       (load f))
     (run-tests)))

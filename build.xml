@@ -5,6 +5,7 @@
 
   <property name="build.dir" location="classes"/>
   <property name="source.dir" location="src"/>
+  <property name="test.dir" location="test"/>
   <property name="clojure.jar" location="lib/clojure.jar"/>
   <property name="contrib.jar" location="lib/clojure-contrib.jar"/>
   <property name="jar.name" location="circumspec.jar"/>
@@ -41,6 +42,20 @@
       </classpath>
       <sysproperty key="clojure.compile.path" value="${build.dir}"/>
       <arg value="circumspec.ExpectationException"/>
+    </java>
+  </target>
+
+  <target name="test" depends="compile">
+    <java classname="clojure.main">
+      <classpath>
+        <path location="${test.dir}"/>
+        <path location="${clojure.jar}"/>
+        <path location="${contrib.jar}"/>
+        <path location="${build.dir}"/>
+        <path location="${source.dir}"/>
+      </classpath>
+      <arg value="-e"/>
+      <arg value="(use 'test) (run-tests!)"/>
     </java>
   </target>
 

@@ -3,6 +3,8 @@
         clojure.contrib.str-utils
         pattern-match))
 
+(declare for-all)
+
 (def registered-descriptions (atom []))
 
 (defmacro wtf [form]
