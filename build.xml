@@ -1,0 +1,55 @@
+<project name="circumspec" default="jar">
+  <description>
+    Clojure BDD.
+  </description>
+
+  <property name="build.dir" location="classes"/>
+  <property name="source.dir" location="src"/>
+  <property name="clojure.jar" location="lib/clojure.jar"/>
+  <property name="clojure-contrib.jar" location="lib/clojure-contrib.jar"/>
+  <property name="jar.name" location="circumspec.jar"/>
+  <property file="local.properties"/>
+  <available property="hasclojure" file="${clojure.jar}"/>
+  <available property="hascontrib" file="${contrib.jar}"/>
+
+  <target name="checkforjars" depends="init">
+    <condition property="hasjars">
+      <and>
+        <isset property="hasclojure"/>
+        <isset property="hascontrib"/>
+      </and>
+    </condition>
+  </target>
+
+  <target name="clean" description="Remove generated classfiles">
+    <delete dir="${build.dir}"/>
+    <delete file="${jar.name}"/>
+  </target>
+
+  <target name="init" depends="clean">
+    <tstamp/>
+    <mkdir dir="${build.dir}"/>
+  </target>
+
+  <target name="compile" depends="checkforjars" description="Compile sources" if="hasjars">
+    <java classname="clojure.lang.Compile">
+      <classpath>
+        <path location="${clojure.jar}"/>
+        <path location="${contrib.jar}"/>
+        <path location="${build.dir}"/>
+        <path location="${source.dir}"/>
+      </classpath>
+      <sysproperty key="clojure.compile.path" value="${build.dir}"/>
+      <arg value="clojure.http.client"/>
+      <arg value="clojure.http.resourcefully"/>
+    </java>
+  </target>
+
+  <target name="jar" description="Create jar file" depends="compile">
+    <jar jarfile="${jar.name}" index="true">
+      <fileset dir="${source.dir}" includes="**/*.clj"/>
+      <fileset dir="${build.dir}" includes="**/*.class"/>
+    </jar>
+  </target>
+
+</project>

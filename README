@@ -1,4 +1,6 @@
 Spike of a BDD vocabulary in Clojure.
 
+Requires a post-1.0 build of Clojure and contrib (included in lib/).
+
 Other included projects:
 patter_match.clj is Copyright (c) 2009 by Tim Lopez. Licensed under Eclipse Public License 1.0.
