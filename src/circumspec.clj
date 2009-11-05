@@ -52,7 +52,30 @@
   (swap! registered-descriptions conj [desc its]))
 
 (defmacro it [desc & forms]
-  `[~desc '~(map polish forms)])
+  `[~desc '(do ~@(map polish forms))])
 
 (defn run-tests []
-  (pprint @registered-descriptions))
+  (doseq [[desc tests] @registered-descriptions]
+    (println desc)
+    (doseq [[testdesc code] tests]
+      (println (str "- " testdesc))
+      (eval code))))
+
+(defmacro throw? [exception form]
+  `(try
+    (do ~form
+        false
+        )
+    (catch ~exception ignored#
+      true
+      )))
+
+(defmacro should [assertion]
+  `(let [res# ~assertion]
+     (if (not res#)
+       (do (print "FAILURE FOR ")
+           (pprint '~assertion)) 
+
+       )
+     )
+  )
