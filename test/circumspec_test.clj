@@ -2,7 +2,7 @@
   (:use circumspec))
 
 (describe
- "good old fashioned fucking fn"
+ "good old fashioned fn"
  (it
   "can do basic things"
   (2 should = 2)
@@ -23,7 +23,8 @@
 (describe
  "failures"
  (it "should raise an exception"
-     ((/ 3 0) should throw ArithmeticException)))
+     ((/ 3 0) should throw ArithmeticException)
+     ((/ 3 0) should throw ArithmeticException "Boom")))
 
 ;; (comment
 ;;   "these will work"

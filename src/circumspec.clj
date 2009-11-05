@@ -9,17 +9,21 @@
   `(pprint (macroexpand-1 '~form)))
 
 (defnp typeof-is-expression
-  [_ s] :when (symbol? s)     :symbol
-  [_ _]                       :predicate
-  [_ t _] :when (= 'throw t)  :throw
-  [_ _ _]                     :positive-assertion
-  [_ n _ _] :when (= 'not n)  :negative-assertion
-  x                           (throw (RuntimeException.
+  [_ s] :when (symbol? s)      :symbol
+  [_ _]                        :predicate
+  [_ t _] :when (= 'throw t)   :throw
+  [_ t _ _] :when (= 'throw t) :throw-exception-string
+  [_ _ _]                      :positive-assertion
+  [_ n _ _] :when (= 'not n)   :negative-assertion
+  x                            (throw (RuntimeException.
                                       (apply str "Invalid is form" x))))              
 
 (defmulti
   reorder
   typeof-is-expression)
+
+(defmethod reorder :throw-exception-string [[input _ exc str]]
+  `(is (~(symbol "thrown?") ~exc ~input)))
 
 (defmethod reorder :throw [[input _ exc]]
   `(should (~(symbol "throw?") ~exc ~input)))
