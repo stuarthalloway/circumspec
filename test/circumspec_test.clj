@@ -7,7 +7,7 @@
   "can do basic things"
   (2 should = 2)
   (3 should not = 2)
-  (2 should be = 2)
+  (2 should be = 42)
   (2 should be #(< 1 % 3))
   (2 should be integer)
   (2 should be (fn [x] (< 1 x 3)))))
@@ -29,6 +29,16 @@
  (it "should raise an exception"
      ((/ 3 0) should throw ArithmeticException)
      ((/ 3 0) should throw ArithmeticException "Boom")))
+
+(describe
+ "multiple assertions"
+ (it
+  "should be possible to do"
+  (for-all [x y] (+ x 10) should = y
+           (5 15)
+           (0 10)
+           (3 13)
+           (325342342 325342352))))
 
 ;; (comment
 ;;   "these will work"

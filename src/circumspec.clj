@@ -15,8 +15,9 @@
   [_ t _ _] :when (= 'throw t) :throw-exception-string
   [_ _ _]                      :positive-assertion
   [_ n _ _] :when (= 'not n)   :negative-assertion
+  [for & t] :when (= 'for-all for) :for-all-expression
   x                            (throw (RuntimeException.
-                                      (apply str "Invalid is form" x))))              
+                                       (apply str "Invalid is form: " x))))              
 
 (defmulti
   reorder
@@ -41,6 +42,9 @@
 (defmethod reorder :negative-assertion [[actual skipnot f expected]]
   `(should
     (not (~f ~actual ~expected))))
+
+(defmethod reorder :for-all-expression [expression]
+  expression)
 
 (def junk-words #{'should 'be})
 
@@ -108,3 +112,11 @@
        )
      )
   )
+
+(defmacro for-all [names code cmp other & table]
+  `(do
+     ~@(map
+        (fn [args]
+          `(should
+            (let [~@(interleave names args)] (~cmp ~code ~other))))
+        table)))
