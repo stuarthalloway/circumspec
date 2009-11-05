@@ -1,6 +1,5 @@
 (ns circumspec
-  (:use clojure.contrib.pprint
-        clojure.contrib.str-utils
+  (:use [clojure.contrib pprint str-utils with-ns]
         pattern-match))
 
 (declare for-all)
@@ -85,7 +84,10 @@
 
 (defmethod run-test :example [[ignore testdesc code] _]
   (println (str "- " testdesc))
-  (eval code))
+  (eval
+   (do
+     (in-ns 'circumspec)
+     code)))
 
 (defmethod run-test :describe [[ignore desc tests] name-so-far]
   (println)
