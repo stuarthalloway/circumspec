@@ -23,10 +23,10 @@
   typeof-is-expression)
 
 (defmethod reorder :throw-exception-string [[input _ exc str]]
-  `(is (~(symbol "thrown?") ~exc ~input)))
+  `(should (throw? ~exc ~input)))
 
 (defmethod reorder :throw [[input _ exc]]
-  `(should (~(symbol "throw?") ~exc ~input)))
+  `(should (throw? ~exc ~input)))
                 
 (defmethod reorder :symbol [[input sym]]
   `(should (~(symbol (str (name sym) "?")) ~input)))
@@ -58,18 +58,23 @@
 (defmacro it [desc & forms]
   `[~desc '(do ~@(map polish forms))])
 
+(defn run-test [[testdesc code]]
+  (println (str "- " testdesc))
+  (eval code))
+
+(defn run-describe [[desc tests]]
+  (println desc)
+  (doseq [test tests]
+    (run-test test)))
+
 (defn run-tests []
-  (doseq [[desc tests] @registered-descriptions]
-    (println desc)
-    (doseq [[testdesc code] tests]
-      (println (str "- " testdesc))
-      (eval code))))
+  (doseq [describe @registered-descriptions]
+    (run-describe describe)))
 
 (defmacro throw? [exception form]
   `(try
     (do ~form
-        false
-        )
+        false)
     (catch ~exception ignored#
       true
       )))
