@@ -1,5 +1,5 @@
 (ns test
-  (:use clojure.test
+  (:use circumspec 
         clojure.contrib.str-utils))
 
 (defn test-files
@@ -12,8 +12,9 @@
     (file-seq (java.io.File. "test")))))
 
 (defn run-tests! []
+  (reset! circumspec/registered-descriptions [])
   (let [names (map #(re-sub #".clj" "" %) (test-files))]
     (doseq [f names]
       (println f)
       (load f))
-    (apply run-tests (map #(symbol (re-sub #"_" "-" %)) names))))
+    (run-tests)))

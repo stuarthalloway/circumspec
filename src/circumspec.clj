@@ -1,8 +1,9 @@
 (ns circumspec
-  (:use clojure.test
-        clojure.contrib.pprint
+  (:use clojure.contrib.pprint
         clojure.contrib.str-utils
         pattern-match))
+
+(def registered-descriptions (atom []))
 
 (defmacro wtf [form]
   `(pprint (macroexpand-1 '~form)))
@@ -21,20 +22,20 @@
   typeof-is-expression)
 
 (defmethod reorder :throw [[input _ exc]]
-  `(is (~(symbol "thrown?") ~exc ~input)))
+  `(should (~(symbol "throw?") ~exc ~input)))
                 
 (defmethod reorder :symbol [[input sym]]
-  `(is (~(symbol (str (name sym) "?")) ~input)))
+  `(should (~(symbol (str (name sym) "?")) ~input)))
 
 (defmethod reorder :predicate [[input predicate]]
-  `(is (~predicate ~input)))
+  `(should (~predicate ~input)))
 
 (defmethod reorder :positive-assertion [[actual f expected]]
-  `(is
+  `(should
     (~f ~actual ~expected)))
 
 (defmethod reorder :negative-assertion [[actual skipnot f expected]]
-  `(is
+  `(should
     (not (~f ~actual ~expected))))
 
 (def junk-words #{'should 'be})
@@ -47,11 +48,11 @@
 (defn into-delimited [desc]
   (symbol (re-sub #"\s+" "-" desc)))
 
-(defmacro describe [desc & its]
-  `(deftest ~(into-delimited (str desc)) ~@its))
+(defn describe [desc & its]
+  (swap! registered-descriptions conj [desc its]))
 
 (defmacro it [desc & forms]
-  `(do
-     (testing ~desc
-              ~@(map polish forms))))
+  `[~desc '~(map polish forms)])
 
+(defn run-tests []
+  (pprint @registered-descriptions))
