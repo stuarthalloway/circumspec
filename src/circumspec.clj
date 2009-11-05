@@ -52,24 +52,44 @@
 (defn into-delimited [desc]
   (symbol (re-sub #"\s+" "-" desc)))
 
-(defn describe [desc & its]
-  (swap! registered-descriptions conj [desc its]))
+(defn rewrite-describe [[name & rest]]
+  (cons
+   (if (= name 'describe)
+     'describe-inner
+     name) rest))
+
+(defmacro describe [desc & its]
+  `(describe-outer
+    ~desc
+    ~@(map rewrite-describe its)))
+
+(defn describe-outer [desc & its]
+  (swap! registered-descriptions conj [:describe desc its]))
+
+(defn describe-inner [desc & its]
+  [:describe desc its])
 
 (defmacro it [desc & forms]
-  `[~desc '(do ~@(map polish forms))])
+  `[:example ~desc '(do ~@(map polish forms))])
 
-(defn run-test [[testdesc code]]
+(defn print-spaces [n]
+  (print (apply str (repeat n "  "))))
+
+(defmulti run-test (fn [[type] _] type))
+
+(defmethod run-test :example [[ignore testdesc code] _]
   (println (str "- " testdesc))
   (eval code))
 
-(defn run-describe [[desc tests]]
-  (println desc)
+(defmethod run-test :describe [[ignore desc tests] name-so-far]
+  (println)
+  (println (str name-so-far desc))
   (doseq [test tests]
-    (run-test test)))
+    (run-test test (str name-so-far desc " "))))
 
 (defn run-tests []
   (doseq [describe @registered-descriptions]
-    (run-describe describe)))
+    (run-test describe "")))
 
 (defmacro throw? [exception form]
   `(try

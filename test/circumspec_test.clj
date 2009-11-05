@@ -17,8 +17,12 @@
  (it
   "also works inside describe"
   (3 should = 3)
-  ((+ 1 42) should = 43)))
-
+  ((+ 1 42) should = 43))
+ (describe
+  "inside of another describe"
+  (it
+   "should work"
+   (true should be = true))))
 
 (describe
  "failures"
