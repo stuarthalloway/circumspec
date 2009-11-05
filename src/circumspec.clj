@@ -123,4 +123,4 @@
         (fn [args]
           `(should
             (let [~@(interleave names args)] (~cmp ~code ~other))))
-        table)))
+        (partition (count names) table))))

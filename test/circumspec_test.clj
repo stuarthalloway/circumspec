@@ -35,10 +35,19 @@
  (it
   "should be possible to do"
   (for-all [x y] (+ x 10) should = y
-           (5 15)
-           (0 10)
-           (3 13)
-           (325342342 325342352))))
+           5 15
+           0 10
+           3 13
+           325342342 325342352))
+ (it
+  "should take three items"
+  (for-all [x y z] (+ x y) should = z
+           5 5 10
+           0 0 0
+           0 1 1
+           -4 10 6))
+
+ )
 
 ;; (comment
 ;;   "these will work"
