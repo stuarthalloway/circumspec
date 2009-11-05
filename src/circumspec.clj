@@ -49,9 +49,6 @@
   [args]
   (reorder (remove junk-words args)))
 
-(defn into-delimited [desc]
-  (symbol (re-sub #"\s+" "-" desc)))
-
 (defn describe [desc & its]
   (swap! registered-descriptions conj [desc its]))
 
