@@ -1,20 +1,24 @@
 (ns circumspec
   (:use clojure.test
         clojure.contrib.pprint
-        clojure.contrib.str-utils))
+        clojure.contrib.str-utils
+        pattern-match))
 
 (defmacro wtf [form]
   `(pprint (macroexpand-1 '~form)))
 
-;; this whole thing will be rewritten
+(defnp typeof-is-expression
+  [_ s] :when (symbol? s)     :symbol
+  [_ _]                       :predicate
+  [_ t _] :when (= 'throw t)  :throw
+  [_ _ _]                     :positive-assertion
+  [_ n _ _] :when (= 'not n)  :negative-assertion
+  x                           (throw (RuntimeException.
+                                      (apply str "Invalid is form" x))))              
+
 (defmulti
   reorder
-  (fn [args]
-    (cond
-     (= 2 (count args)) (if (symbol? (second args)) :symbol :predicate)
-     (= 3 (count args)) (if (= 'throw (second args)) :throw :positive-assertion)
-     (and (= 4 (count args)) (= 'not (second args))) :negative-assertion
-     :default (throw (RuntimeException. "Rats! You sank my battleship")))))
+  typeof-is-expression)
 
 (defmethod reorder :throw [[input _ exc]]
   `(is (~(symbol "thrown?") ~exc ~input)))
