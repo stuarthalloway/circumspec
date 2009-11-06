@@ -109,20 +109,28 @@
    report
    tests))
 
+(def empty-report {:examples 0
+                   :failures 0
+                   :errors 0
+                   :failure-descriptions []
+                   :error-descriptions []})
+
+(defn output-report [report]
+  (println)
+  (println
+   (str
+    (report :examples) " examples, "
+    (report :failures) " failures, "
+    (report :errors)   " errors")))
+
 (defn run-tests []
   (let [result
-   (let [report {:examples 0
-                 :failures 0
-                 :errors 0
-                 :failure-descriptions []
-                 :error-descriptions []}]
-     (reduce
-      (fn [report describe]
-        (run-test describe "" report))
-      report
-      @registered-descriptions))]
-    (println)
-    (println (str (result :examples) " examples, " (result :failures) " failures, " (result :errors) " errors"))    
+        (reduce
+         (fn [report describe]
+           (run-test describe "" report))
+         empty-report
+         @registered-descriptions)]
+    (output-report report)
     (= (+ (result :failures) (result :errors)) 0)))
 
 (defmacro throw? [exception form]
