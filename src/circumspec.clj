@@ -2,9 +2,8 @@
   (:use [clojure.contrib pprint str-utils with-ns]
         pattern-match))
 
-(declare for-all)
-
 (def registered-descriptions (atom []))
+(def assertions (atom 0))
 
 (defmacro wtf [form]
   `(pprint (macroexpand-1 '~form)))
@@ -91,13 +90,22 @@
         (in-ns 'circumspec)
         code))
      (println)
-     (assoc report :examples (inc (:examples report))))   
-   (catch Exception failure
-     (println " (FAILED)")
-     (assoc report
-       :examples (inc (:examples report))
-       :failures (inc (:failures report))
-       :failure-descriptions (conj (:failure-descriptions report) failure))
+     (assoc report :examples (inc (:examples report))))
+   (catch Throwable failure
+;     (if (instance? failure circumspec.ExpectationException)
+       (do
+         (println " (FAILED)")
+         (assoc report
+           :examples (inc (:examples report))
+           :failures (inc (:failures report))
+           :failure-descriptions (conj (:failure-descriptions report) failure)))
+;       (do
+;         (println " (ERROR)")
+;         (assoc report
+;           :examples (inc (:examples report))
+;           :errors (inc (:errors report))
+;           :error-descriptions (conj (:error-descriptions report) failure)))
+;       )
      )))
 
 (defmethod run-test :describe [[ignore desc tests] name-so-far report]
@@ -119,6 +127,7 @@
   (println)
   (println
    (str
+    @assertions        " assertions, "
     (report :examples) " examples, "
     (report :failures) " failures, "
     (report :errors)   " errors")))
@@ -143,6 +152,7 @@
 
 (defmacro should [assertion]
   `(let [res# ~assertion]
+     (swap! assertions inc)
      (if (not res#)
        (throw (circumspec.ExpectationException. (str '~assertion))))))
 

@@ -15,6 +15,10 @@
  (it
   "should report failures correctly"
   (42 should = 43))
+
+  (it
+  "should report errors correctly"
+  ((/ 3 0) should = 0))
 )
 
 (describe
