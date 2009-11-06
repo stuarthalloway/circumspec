@@ -13,7 +13,6 @@
 
 (defn run-tests! []
   (reset! circumspec/registered-descriptions [])
-  (reset! circumspec/assertions 0)
   (let [names (map #(re-sub #".clj" "" %) (test-files))]
     (doseq [f names]
       (load f))

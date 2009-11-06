@@ -133,6 +133,7 @@
     (report :errors)   " errors")))
 
 (defn run-tests []
+  (reset! circumspec/assertions 0)
   (let [result
         (reduce
          (fn [report describe]
