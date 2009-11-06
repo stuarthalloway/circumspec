@@ -130,7 +130,7 @@
            (run-test describe "" report))
          empty-report
          @registered-descriptions)]
-    (output-report report)
+    (output-report result)
     (= (+ (result :failures) (result :errors)) 0)))
 
 (defmacro throw? [exception form]
