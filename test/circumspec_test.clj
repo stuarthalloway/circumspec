@@ -10,7 +10,12 @@
   (2 should be = 2)
   (2 should be #(< 1 % 3))
   (2 should be integer)
-  (2 should be (fn [x] (< 1 x 3)))))
+  (2 should be (fn [x] (< 1 x 3))))
+
+ (it
+  "should report failures correctly"
+  (42 should = 43))
+)
 
 (describe
  "it looks better when described"
@@ -46,8 +51,7 @@
            0 0 0
            0 1 1
            -4 10 6))
-
- )
+)
 
 ;; (comment
 ;;   "these will work"
@@ -72,7 +76,11 @@
 ;;             (burp! should fail-with "divide by zero"
 ;;                  (burp! should fail-with ArithmeticException #"zero"))          
 ;;             (burp! should fail-with #"zero")))
- 
+
+
+;;   (it
+;;     "should be possible to mock out a function, at least partially"
+;;     (foo should be called with (42 555 blarg)))
  
 ;;    (it "is possible to do a multiple assertion"
 ;;        [:pending]

@@ -80,24 +80,50 @@
 (defn print-spaces [n]
   (print (apply str (repeat n "  "))))
 
-(defmulti run-test (fn [[type] _] type))
+(defmulti run-test (fn [[type] _ _] type))
 
-(defmethod run-test :example [[ignore testdesc code] _]
-  (println (str "- " testdesc))
-  (eval
+(defmethod run-test :example [[ignore testdesc code] _ report]
+  (print (str "- " testdesc))
+  (try
    (do
-     (in-ns 'circumspec)
-     code)))
+     (eval
+      (do
+        (in-ns 'circumspec)
+        code))
+     (println)
+     (assoc report :examples (inc (:examples report))))   
+   (catch Exception failure
+     (println " (FAILED)")
+     (assoc report
+       :examples (inc (:examples report))
+       :failures (inc (:failures report))
+       :failure-descriptions (conj (:failure-descriptions report) failure))
+     )))
 
-(defmethod run-test :describe [[ignore desc tests] name-so-far]
+(defmethod run-test :describe [[ignore desc tests] name-so-far report]
   (println)
   (println (str name-so-far desc))
-  (doseq [test tests]
-    (run-test test (str name-so-far desc " "))))
+  (reduce
+   (fn [report test]
+     (run-test test (str name-so-far desc " ") report))
+   report
+   tests))
 
 (defn run-tests []
-  (doseq [describe @registered-descriptions]
-    (run-test describe "")))
+  (let [result
+   (let [report {:examples 0
+                 :failures 0
+                 :errors 0
+                 :failure-descriptions []
+                 :error-descriptions []}]
+     (reduce
+      (fn [report describe]
+        (run-test describe "" report))
+      report
+      @registered-descriptions))]
+    (println)
+    (println (str (result :examples) " examples, " (result :failures) " failures, " (result :errors) " errors"))    
+    (= (+ (result :failures) (result :errors)) 0)))
 
 (defmacro throw? [exception form]
   `(try
@@ -110,12 +136,7 @@
 (defmacro should [assertion]
   `(let [res# ~assertion]
      (if (not res#)
-       (do (print "FAILURE FOR ")
-           (pprint '~assertion)) 
-
-       )
-     )
-  )
+       (throw (circumspec.ExpectationException. (str '~assertion))))))
 
 (defmacro for-all [names code cmp other & table]
   `(do
