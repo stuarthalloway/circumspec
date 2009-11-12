@@ -1,4 +1,4 @@
-(ns circumspec-test
+(ns failing-test
   (:use circumspec))
 
 ;; TODO: use metadata to leave these out of the main build so the

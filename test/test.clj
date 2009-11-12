@@ -1,15 +1,7 @@
 (ns test
-  (:use circumspec 
+  (:use circumspec
+        circumspec.util
         clojure.contrib.str-utils))
-
-(defn test-files
-  "Please make this helper part of some core lib somewhere..."
-  []
-  (filter
-   #(re-find #"_test.clj$" %) 
-   (map
-    #(.getName %)
-    (file-seq (java.io.File. "test")))))
 
 (defn run-tests!
   "Run all tests. Exit the VM with an error code if a test
@@ -17,10 +9,9 @@
   ([] (run-tests! false))
   ([keep-alive]
      (reset! circumspec/registered-descriptions [])
-     (let [names (map #(re-sub #".clj" "" %) (test-files))]
-       (doseq [f names]
-         (load f))
-       (let [result (run-tests)]
-         (if keep-alive
-           result
-           (System/exit (if result 0 -1)))))))
+     (doseq [f (test-namespaces "test")]
+       (require f))
+     (let [result (run-tests)]
+       (if keep-alive
+         result
+         (System/exit (if result 0 -1))))))
