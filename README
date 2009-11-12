@@ -1,6 +1,15 @@
-Spike of a BDD vocabulary in Clojure.
+circumspec: BDD in Clojure
 
+LICENSE:
+The use and distribution terms for this software are covered by the
+Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
+which can be found in the file epl-v10.html at the root of this distribution.
+By using this software in any fashion, you are agreeing to be bound by the 
+terms of this license. You must not remove this notice, or any other, from 
+this software.
+
+REQUIREMENTS:
 Requires a post-1.0 build of Clojure and contrib (included in lib/).
 
-Other included projects:
+INCLUDED PROJECTS:
 patter_match.clj is Copyright (c) 2009 by Tim Lopez. Licensed under Eclipse Public License 1.0.
