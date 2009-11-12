@@ -10,16 +10,7 @@
   (2 should be = 2)
   (2 should be #(< 1 % 3))
   (2 should be integer)
-  (2 should be (fn [x] (< 1 x 3))))
-
- (it
-  "should report failures correctly"
-  (42 should = 43))
-
-  (it
-  "should report errors correctly"
-  ((/ 3 0) should = 0))
-)
+  (2 should be (fn [x] (< 1 x 3)))))
 
 (describe
  "it looks better when described"
@@ -65,21 +56,16 @@
 ;;    (it "is possible to do a basic assertion"
 ;;        (let [curvy-glyph? ...]
 ;;          (2 should have curvy-glyph))
-;;        (2 should not = 3 ...)
 ;;        ([1 2] should contain 1)
 ;;        (2 should = 2)
-;;        (2 should be #(< 1 % 3))
-;;        (2 should be (fn [x] (< 1 x 3)))
 ;;        ((< 1 2 3) should be true)
 ;;        (2 should be numeric)
 ;;        ([1 2] should =set [2 1])
 ;;        (safe! should not fail)
 ;;        (burp! should fail)
-;;        (burp! should fail-with ArithmeticException)
-;;        (burp! should fail-with ArithmeticException "divide by zero"
-;;             (burp! should fail-with "divide by zero"
-;;                  (burp! should fail-with ArithmeticException #"zero"))          
-;;             (burp! should fail-with #"zero")))
+;;        (burp! should fail-with "divide by zero"
+;;        (burp! should fail-with ArithmeticException #"zero"))          
+;;        (burp! should fail-with #"zero")))
 
 
 ;;   (it

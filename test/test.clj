@@ -11,9 +11,16 @@
     #(.getName %)
     (file-seq (java.io.File. "test")))))
 
-(defn run-tests! []
-  (reset! circumspec/registered-descriptions [])
-  (let [names (map #(re-sub #".clj" "" %) (test-files))]
-    (doseq [f names]
-      (load f))
-    (run-tests)))
+(defn run-tests!
+  "Run all tests. Exit the VM with an error code if a test
+   fails, unless keep-alive is true."
+  ([] (run-tests! false))
+  ([keep-alive]
+     (reset! circumspec/registered-descriptions [])
+     (let [names (map #(re-sub #".clj" "" %) (test-files))]
+       (doseq [f names]
+         (load f))
+       (let [result (run-tests)]
+         (if keep-alive
+           result
+           (System/exit (if result 0 -1)))))))

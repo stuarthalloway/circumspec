@@ -132,7 +132,9 @@
     (report :failures) " failures, "
     (report :errors)   " errors")))
 
-(defn run-tests []
+(defn run-tests
+  "Run tests, returning true if all pass."
+  []
   (reset! circumspec/assertions 0)
   (let [result
         (reduce
