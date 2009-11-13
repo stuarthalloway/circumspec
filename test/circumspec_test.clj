@@ -40,14 +40,14 @@
  "multiple assertions"
  (it
   "should be possible to do"
-  (for-all [x y] (+ x 10) should = y
+  (for-these [x y] (+ x 10) should = y
            5 15
            0 10
            3 13
            325342342 325342352))
  (it
   "should take three items"
-  (for-all [x y z] (+ x y) should = z
+  (for-these [x y z] (+ x y) should = z
            5 5 10
            0 0 0
            0 1 1
@@ -80,7 +80,7 @@
  
 ;;    (it "is possible to do a multiple assertion"
 ;;        [:pending]
-;;        (for-all [x y] (* x y) should = (* y x)
+;;        (for-these [x y] (* x y) should = (* y x)
 ;;                 10 15
 ;;                 1  1
 ;;                 0  20))))

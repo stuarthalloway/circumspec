@@ -15,7 +15,7 @@
   [_ t _ _] :when (= 'throw t) :throw-exception-string
   [_ _ _]                      :positive-assertion
   [_ n _ _] :when (= 'not n)   :negative-assertion
-  [for & t] :when (= 'for-all for) :for-all-expression
+  [for & t] :when (= 'for-these for) :for-these-expression
   x                            (throw (RuntimeException.
                                        (apply str "Invalid is form: " x))))              
 
@@ -43,7 +43,7 @@
   `(should
     (not (~f ~actual ~expected))))
 
-(defmethod reorder :for-all-expression [expression]
+(defmethod reorder :for-these-expression [expression]
   expression)
 
 (def junk-words #{'should 'be})
@@ -165,7 +165,7 @@
      (if (not res#)
        (throw (circumspec.ExpectationException. (str '~assertion))))))
 
-(defmacro for-all [names code cmp other & table]
+(defmacro for-these [names code cmp other & table]
   `(do
      ~@(map
         (fn [args]
