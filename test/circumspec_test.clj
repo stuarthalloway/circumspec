@@ -15,7 +15,6 @@
   (3 should not = 2)
   (2 should be = 2)
   (2 should be #(< 1 % 3))
-  (2 should be integer)
   (2 should be (fn [x] (< 1 x 3)))))
 
 (describe
@@ -29,6 +28,13 @@
   (it
    "should work"
    (true should be = true))))
+
+(describe
+ "predicates"
+
+ (it "handles clojure predicates"
+     (3 should be integer)
+     (1 should be odd)))
 
 (describe
  "failures"
@@ -65,9 +71,6 @@
 ;;        (let [curvy-glyph? ...]
 ;;          (2 should have curvy-glyph))
 ;;        ([1 2] should contain 1)
-;;        (2 should = 2)
-;;        ((< 1 2 3) should be true)
-;;        (2 should be numeric)
 ;;        ([1 2] should =set [2 1])
 
 
@@ -75,19 +78,4 @@
 ;;     "should be possible to mock out a function, at least partially"
 ;;     (foo should be called with (42 555 blarg)))
  
-;;    (it "is possible to do a multiple assertion"
-;;        [:pending]
-;;        (for-these [x y] (* x y) should = (* y x)
-;;                 10 15
-;;                 1  1
-;;                 0  20))))
-
-;; (comment
-;;   "Ancient history"
-;;   ((+ 1 1) in some places of the world be > 2)
-;;   ((+ 1 1) should as-big-as 2)
-;;   ((+ 1 1) should 2) 
-;;   (should (+ 1 1) 2)
-;;   (2 should be (< 1 % 3))   ;;hmmm....
-;;   (2 should be x (< 1 x 3)) ;;hmmm....)
 

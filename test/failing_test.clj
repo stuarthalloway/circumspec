@@ -4,7 +4,7 @@
 ;; TODO: use metadata to leave these out of the main build so the
 ;; self-tests don't fail.
 (describe
- "failing"
+ "things that should fail"
 
  (it
   "should fail (not equal)"
@@ -28,4 +28,14 @@
 
   (it
    "should fail (partial string not good enough)"
-   ((/ 3 0) should throw ArithmeticException "zero")))
+   ((/ 3 0) should throw ArithmeticException "zero"))
+
+  (it
+   "should fail (predicate matching)"
+   (1 should be even)))
+
+(describe
+ "failing things that need to succeed"
+  (let [three? #(= % 3)]
+   (it "handles predicates let locally"
+       (3 should be three))))
