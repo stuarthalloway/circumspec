@@ -74,20 +74,25 @@
   [:describe desc its])
 
 (defmacro it [desc & forms]
-  `[:example ~desc '(do ~@(map polish forms))])
+  `[:example (.name *ns*) ~desc '(do ~@(map polish forms))])
 
 (defn print-spaces [n]
   (print (apply str (repeat n "  "))))
 
 (defmulti run-test (fn [[type] _ _] type))
 
-(defmethod run-test :example [[ignore testdesc code] _ report]
+(defn print-throwable [throwable]
+  (println "  " (.getMessage throwable))
+  (comment (doseq [e (.getStackTrace throwable)]
+             (println "  " (.toString e)))))
+
+(defmethod run-test :example [[ignore ns-sym testdesc code] _ report]
   (print (str "- " testdesc))
   (try
    (do
      (eval
       (do
-        (in-ns 'circumspec)
+        (in-ns ns-sym)
         code))
      (println)
      (assoc report :examples (inc (:examples report))))
@@ -95,6 +100,7 @@
 ;     (if (instance? failure circumspec.ExpectationException)
        (do
          (println " (FAILED)")
+         (print-throwable failure)
          (assoc report
            :examples (inc (:examples report))
            :failures (inc (:failures report))

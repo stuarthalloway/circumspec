@@ -2,6 +2,12 @@
   (:use circumspec))
 
 (describe
+ "test execution context"
+ (it
+  "run tests in the namespace where they are defined"
+  (*ns* should = (find-ns 'circumspec-test))))
+
+(describe
  "good old fashioned fn"
  (it
   "can do basic things"

@@ -4,7 +4,9 @@
 (describe
  "namespace utils"
  (it
-  "should find namespaces")
+  "should find namespaces"
+  ((includes? (test-namespaces "test") 'circumspec-test) should = true))
  (it
-  "shoul find nested namespaces"))
+  "should find nested namespaces"
+  ((includes? (test-namespaces "test") 'circumspec.util-test) should = true)))
 
