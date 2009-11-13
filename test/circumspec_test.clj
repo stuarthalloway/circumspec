@@ -32,9 +32,12 @@
 
 (describe
  "failures"
- (it "should raise an exception"
-     ((/ 3 0) should throw ArithmeticException)
-     ((/ 3 0) should throw ArithmeticException "Boom")))
+ (it "should match exception type"
+     ((/ 3 0) should throw ArithmeticException))
+ (it "should match exception message string"
+     ((/ 4 0) should throw ArithmeticException "Divide by zero"))
+ (it "should match regular expression"
+     ((/ 5 0) should throw ArithmeticException #"by")))
 
 (describe
  "multiple assertions"
@@ -51,8 +54,7 @@
            5 5 10
            0 0 0
            0 1 1
-           -4 10 6))
-)
+           -4 10 6)))
 
 ;; (comment
 ;;   "these will work"
@@ -67,11 +69,6 @@
 ;;        ((< 1 2 3) should be true)
 ;;        (2 should be numeric)
 ;;        ([1 2] should =set [2 1])
-;;        (safe! should not fail)
-;;        (burp! should fail)
-;;        (burp! should fail-with "divide by zero"
-;;        (burp! should fail-with ArithmeticException #"zero"))          
-;;        (burp! should fail-with #"zero")))
 
 
 ;;   (it
