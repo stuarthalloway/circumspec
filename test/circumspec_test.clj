@@ -73,9 +73,10 @@
   "returns a map of information needed to run a test"
   ((macroexpand-1
     '(circumspec/it "works" (1 should = 1))) should =
-    '{:type :example
-      :description "works"
-      :forms-and-fns (circumspec/forms-and-fns ((1 should = 1)))}))
+    '(clojure.core/with-meta {:type :example
+                              :description "works"
+                              :forms-and-fns (circumspec/forms-and-fns ((1 should = 1)))}
+       {})))
 
 ;; (comment
 ;;   "these will work"

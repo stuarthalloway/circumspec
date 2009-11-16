@@ -75,6 +75,15 @@
      'describe-inner
      name) rest))
 
+(defn meta-and-forms
+  "Helper that pops off the metadata (if any) and returns [meta, forms]"
+  [forms]
+  (let [has-meta? (map? (first forms))
+        m (if has-meta? (first forms) {})
+        forms (if has-meta? (apply vector (rest forms)) forms)]
+    [m forms]))
+
+
 (defmacro describe [desc & its]
   `(describe-outer
     ~desc
@@ -92,9 +101,11 @@
    :its its})
 
 (defmacro it [desc & forms]
-  `{:type :example
-    :description ~desc
-    :forms-and-fns (forms-and-fns ~forms)})
+  (let [[m forms] (meta-and-forms forms)]
+    `(with-meta {:type :example
+                 :description ~desc
+                 :forms-and-fns (forms-and-fns ~forms)}
+       ~m)))
 
 ;; forms are not currently used but might be useful for error reporting
 (defmacro forms-and-fns
