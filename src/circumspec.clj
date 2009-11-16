@@ -1,11 +1,13 @@
 (ns circumspec
-  (:use [clojure.contrib pprint str-utils with-ns]
+  (:use [clojure.contrib def pprint str-utils with-ns]
         pattern-match)
   (:import circumspec.ExpectationException
            java.util.regex.Pattern))
 
 (def registered-descriptions (atom []))
 (def assertions (atom 0))
+
+(defvar *tests* nil "stack of current tests")
 
 (defmacro wtf
   "'What the form' is going on? Convenience for macroexpand."
@@ -81,7 +83,7 @@
   [forms]
   (let [has-meta? (map? (first forms))
         m (if has-meta? (first forms) {})
-        forms (if has-meta? (apply vector (rest forms)) forms)]
+        forms (if has-meta? (rest forms) forms)]
     [m forms]))
 
 
@@ -90,16 +92,17 @@
     ~desc
     ~@(map rewrite-describe its)))
 
-(defn describe-outer [desc & its]
-  (swap! registered-descriptions conj
-         {:type :describe
-          :description desc
-          :its its}))
+(defmacro describe-inner [desc & its]
+  (let [[m its] (meta-and-forms its)]
+    `(with-meta {:type :describe
+                 :description ~desc
+                 :its (vector ~@its)}
+       ~m)))
 
-(defn describe-inner [desc & its]
-  {:type :describe
-   :description desc
-   :its its})
+(defmacro describe-outer [& args]
+  `(swap! registered-descriptions conj
+          (describe-inner ~@args)))
+
 
 (defmacro it [desc & forms]
   (let [[m forms] (meta-and-forms forms)]
@@ -130,12 +133,14 @@
 
 (defmethod run-test :example [{ns-sym :namespace
                                testdesc :description
-                               forms-and-fns :forms-and-fns}
+                               forms-and-fns :forms-and-fns
+                               :as test}
                               _ report]
   (print (str "- " testdesc))
   (try
-   (doseq [[_ fn] forms-and-fns]
-     (fn))
+   (binding [*tests* (cons test *tests*)]
+     (doseq [[_ fn] forms-and-fns]
+       (fn)))
    (println)
    (assoc report :examples (inc (:examples report)))
    (catch Throwable failure
@@ -156,14 +161,16 @@
 ;       )
      )))
 
-(defmethod run-test :describe [{desc :description tests :its} name-so-far report]
+(defmethod run-test :describe
+  [{desc :description tests :its :as test} name-so-far report]
   (println)
   (println (str name-so-far desc))
-  (reduce
-   (fn [report test]
-     (run-test test (str name-so-far desc " ") report))
-   report
-   tests))
+  (binding [*tests* (cons test *tests*)]
+    (reduce
+     (fn [report test]
+       (run-test test (str name-so-far desc " ") report))
+     report
+     tests)))
 
 (def empty-report {:examples 0
                    :failures 0

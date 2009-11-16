@@ -67,6 +67,18 @@
            0 1 1
            -4 10 6)))
 
+  
+(describe
+ "metadata"
+  {:foo :bar}
+ (it
+  "can be added to it forms"
+  {:baz :quux}
+  (^(first *tests*) should = {:baz :quux}))
+ (it
+  "can be added to describe forms"
+  (^(second *tests*) should = {:foo :bar})))
+
 (describe
  "it"
  (it
@@ -85,22 +97,12 @@
    (for-these [input result] (rewrite-describe input) should = result
               '(describe foo) '(describe-inner foo)
               '(foo bar) '(foo bar)
-              {:A :B} {:A :B})))
+              {:A :B} {:A :B}))))
+
 ;; (comment
 ;;   "these will work"
-;;   (describe
-;;    "Circumspect"
-;;    [:metadata]
-;;    (it "is possible to do a basic assertion"
-;;        (let [curvy-glyph? ...]
-;;          (2 should have curvy-glyph))
 ;;        ([1 2] should contain 1)
 ;;        ([1 2] should =set [2 1])
-
-
 ;;   (it
 ;;     "should be possible to mock out a function, at least partially"
 ;;     (foo should be called with (42 555 blarg)))
- 
-
-)
