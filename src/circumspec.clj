@@ -81,25 +81,34 @@
     ~@(map rewrite-describe its)))
 
 (defn describe-outer [desc & its]
-  (swap! registered-descriptions conj [:describe desc its]))
+  (swap! registered-descriptions conj
+         {:type :describe
+          :description desc
+          :its its}))
 
 (defn describe-inner [desc & its]
-  [:describe desc its])
+  {:type :describe
+   :description desc
+   :its its})
 
 (defmacro it [desc & forms]
-  `[:example (.name *ns*) ~desc '(do ~@(map polish forms))])
+  `{:type :example
+    :namespace (.name *ns*)
+    :description ~desc
+    :forms '(do ~@(map polish forms))})
 
 (defn print-spaces [n]
   (print (apply str (repeat n "  "))))
 
-(defmulti run-test (fn [[type] _ _] type))
+(defmulti run-test (fn [{type :type} _ _] type))
 
 (defn print-throwable [throwable]
   (println "  " (.getMessage throwable))
   (comment (doseq [e (.getStackTrace throwable)]
              (println "  " (.toString e)))))
 
-(defmethod run-test :example [[ignore ns-sym testdesc code] _ report]
+(defmethod run-test :example [{ns-sym :namespace testdesc :description code :forms}
+                              _ report]
   (print (str "- " testdesc))
   (try
    (do
@@ -127,7 +136,7 @@
 ;       )
      )))
 
-(defmethod run-test :describe [[ignore desc tests] name-so-far report]
+(defmethod run-test :describe [{desc :description tests :its} name-so-far report]
   (println)
   (println (str name-so-far desc))
   (reduce
