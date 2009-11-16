@@ -1,11 +1,16 @@
 (ns circumspec-test
   (:use circumspec))
 
+(def foo 27)
+
 (describe
  "test execution context"
  (it
-  "run tests in the namespace where they are defined"
-  (*ns* should = (find-ns 'circumspec-test))))
+  "tests can access the namespace where they are defined"
+  (foo should = 27))
+ (let [three? #(= % 3)]
+   (it "handles predicates let locally"
+       (3 should be three))))
 
 (describe
  "good old fashioned fn"
@@ -18,15 +23,15 @@
   (2 should be (fn [x] (< 1 x 3)))))
 
 (describe
- "it looks better when described"
+ "describe"
  (it
-  "also works inside describe"
+  "can have a nested it"
   (3 should = 3)
   ((+ 1 42) should = 43))
  (describe
-  "inside of another describe"
+  "can have a nested describe"
   (it
-   "should work"
+   "can have a subnested it"
    (true should be = true))))
 
 (describe
@@ -67,11 +72,10 @@
  (it
   "returns a map of information needed to run a test"
   ((macroexpand-1
-    '(it "works" (1 should = 1))) should =
+    '(circumspec/it "works" (1 should = 1))) should =
     '{:type :example
-      :namespace (.name clojure.core/*ns*)
       :description "works"
-      :forms '(do (circumspec/should-equal 1 1))})))
+      :forms-and-fns (circumspec/forms-and-fns ((1 should = 1)))}))
 
 ;; (comment
 ;;   "these will work"
@@ -90,3 +94,4 @@
 ;;     (foo should be called with (42 555 blarg)))
  
 
+)

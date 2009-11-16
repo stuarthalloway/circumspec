@@ -93,9 +93,18 @@
 
 (defmacro it [desc & forms]
   `{:type :example
-    :namespace (.name *ns*)
     :description ~desc
-    :forms '(do ~@(map polish forms))})
+    :forms-and-fns (forms-and-fns ~forms)})
+
+;; forms are not currently used but might be useful for error reporting
+(defmacro forms-and-fns
+  "Returns a vector of vectors [[form fn] ...]
+   where form is the form and fn is the form
+   captured in a fn."
+  [forms]
+  `(vector ~@(for [f forms]
+               (let [p (polish f)]
+                 `['~p (fn [] ~p)]))))
 
 (defn print-spaces [n]
   (print (apply str (repeat n "  "))))
@@ -107,17 +116,16 @@
   (comment (doseq [e (.getStackTrace throwable)]
              (println "  " (.toString e)))))
 
-(defmethod run-test :example [{ns-sym :namespace testdesc :description code :forms}
+(defmethod run-test :example [{ns-sym :namespace
+                               testdesc :description
+                               forms-and-fns :forms-and-fns}
                               _ report]
   (print (str "- " testdesc))
   (try
-   (do
-     (eval
-      (do
-        (in-ns ns-sym)
-        code))
-     (println)
-     (assoc report :examples (inc (:examples report))))
+   (doseq [[_ fn] forms-and-fns]
+     (fn))
+   (println)
+   (assoc report :examples (inc (:examples report)))
    (catch Throwable failure
 ;     (if (instance? failure ExpectationException)
        (do

@@ -8,7 +8,7 @@
 
  (it
   "should fail (not equal)"
-  (42 should = 43))
+  ((+ 1 41) should = 43))
 
   (it
    "should fail (throws an error)"
@@ -36,6 +36,4 @@
 
 (describe
  "failing things that need to succeed"
-  (let [three? #(= % 3)]
-   (it "handles predicates let locally"
-       (3 should be three))))
+)
