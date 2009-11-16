@@ -12,11 +12,17 @@
   [form]
   `(pprint (macroexpand-1 '~form)))
 
+(defn pps
+  "Pretty print into a string"
+  [x]
+  (with-out-str (pprint x)))
+
 (defnp typeof-is-expression
   [_ s] :when (symbol? s)      :symbol
   [_ _]                        :predicate
   [_ t _] :when (= 'throw t)   :throw
   [_ t _ _] :when (= 'throw t) :throw-with-matcher
+  [_ f _] :when (= '= f)       :equality-assertion
   [_ _ _]                      :positive-assertion
   [_ n _ _] :when (= 'not n)   :negative-assertion
   [for & t] :when (= 'for-these for) :for-these-expression
@@ -42,6 +48,9 @@
 (defmethod reorder :positive-assertion [[actual f expected]]
   `(should
     (~f ~actual ~expected)))
+
+(defmethod reorder :equality-assertion [[actual _ expected]]
+  `(should-equal ~actual ~expected))
 
 (defmethod reorder :negative-assertion [[actual skipnot f expected]]
   `(should
@@ -202,6 +211,21 @@
                   (catch Throwable t#
                     (throw (ExpectationException. (str "Expected " '~form " to throw " ~ex-type ", threw " t#)))))
          (throw (ExpectationException. (str "Expected " '~form " to throw " ~ex-type))))))
+
+(defmacro should-equal [actual expected]
+  `(let [actual# ~actual
+         expected# ~expected]
+     (swap! assertions inc)
+     (when-not (= actual# expected#)
+       (throw (ExpectationException. (str "Expected\n\n"
+                                          (pps '~actual)
+                                          "   =\n"
+                                          (pps '~expected)
+                                          "\ngot\n\n"
+                                          (pps actual#)
+                                          "   !=\n"
+                                          (pps expected#)
+                                          "\n"))))))
 
 (defmacro should [assertion]
   `(let [res# ~assertion]

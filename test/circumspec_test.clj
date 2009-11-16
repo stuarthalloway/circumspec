@@ -62,6 +62,14 @@
            0 1 1
            -4 10 6)))
 
+(describe
+ "it"
+ (it
+  "returns a map of information needed to run a test"
+  ((macroexpand-1
+    '(it "works" (1 should = 1))) should =
+    '[:example (.name clojure.core/*ns*) "works" '(do (circumspec/should-equal 1 1))])))
+
 ;; (comment
 ;;   "these will work"
 ;;   (describe
