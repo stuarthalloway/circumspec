@@ -69,11 +69,12 @@
 (defn into-delimited [desc]
   (symbol (re-sub #"\s+" "-" desc)))
 
-(defn rewrite-describe [[name & rest]]
-  (cons
-   (if (= name 'describe)
-     'describe-inner
-     name) rest))
+(defn rewrite-describe [forms]
+  (if (sequential? forms)
+   (if (= (first forms) 'describe)
+     (cons 'describe-inner (rest forms))
+     forms)
+   forms))
 
 (defn meta-and-forms
   "Helper that pops off the metadata (if any) and returns [meta, forms]"

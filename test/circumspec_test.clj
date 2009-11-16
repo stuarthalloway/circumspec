@@ -77,7 +77,15 @@
                               :description "works"
                               :forms-and-fns (circumspec/forms-and-fns ((1 should = 1)))}
        {})))
-
+ 
+ (describe
+  "rewrite-describe"
+  (it
+   "replaces describe with describe-inner if appearing at first of sequence"
+   (for-these [input result] (rewrite-describe input) should = result
+              '(describe foo) '(describe-inner foo)
+              '(foo bar) '(foo bar)
+              {:A :B} {:A :B})))
 ;; (comment
 ;;   "these will work"
 ;;   (describe
