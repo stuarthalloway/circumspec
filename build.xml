@@ -41,7 +41,7 @@
         <path location="${source.dir}"/>
       </classpath>
       <sysproperty key="clojure.compile.path" value="${build.dir}"/>
-      <arg value="circumspec.ExpectationException"/>
+      <arg value="circumspec.AssertFailed"/>
     </java>
   </target>
 

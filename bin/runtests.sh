@@ -1,8 +1,1 @@
-#!/bin/sh
-CLASSPATH=classes:src:test
-
-for f in lib/*.jar; do
-    CLASSPATH=$CLASSPATH:$f
-done
-
-java -cp $CLASSPATH jline.ConsoleRunner clojure.main -e "(use 'test) (run-tests!)"
+java $@ -Xmx1G -cp test:src:classes:lib/clojure.jar:lib/clojure-contrib.jar clojure.main -e "(use 'circumspec.cli) (run-tests)"

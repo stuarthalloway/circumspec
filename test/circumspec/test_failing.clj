@@ -1,4 +1,5 @@
-(ns failing-test
+(ns circumspec.test-failing
+  (:refer-clojure :exclude (assert))
   (:use circumspec))
 
 ;; TODO: use metadata to leave these out of the main build so the
@@ -33,7 +34,3 @@
   (it
    "should fail (predicate matching)"
    (1 should be even)))
-
-(describe
- "failing things that need to succeed"
-)
