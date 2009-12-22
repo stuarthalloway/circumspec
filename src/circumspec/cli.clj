@@ -1,5 +1,5 @@
 (ns circumspec.cli
-  (:require [circumspec.report dot flat nested])
+  (:require [circumspec.report dot nested])
   (:use [circumspec.colorize :only (*colorize*)])
   (:use [circumspec.runner :only (namespace-result-seq test-namespaces)]))
 
@@ -24,6 +24,11 @@
   (java.util.regex.Pattern/compile
    (System/getProperty "circumspec.test-regex" "-test$")))
 
+(defn test-dir
+  "Gets test-dir from -Dcircumspec.test-dir. Default to test"
+  []
+  (System/getProperty "circumspec.test-dir" "test"))
+
 (defn run-tests
   "Runs all tests. Assumes tests are in test directory an have namespaces
    ending in -test."
@@ -31,6 +36,6 @@
   (binding [*colorize* (colorize?)]
     ((report-fn)
      (namespace-result-seq
-      (test-namespaces "test" (test-regex)))))
+      (test-namespaces (test-dir) (test-regex)))))
 
   (shutdown-agents))

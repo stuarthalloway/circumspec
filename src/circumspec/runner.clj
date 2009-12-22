@@ -4,9 +4,14 @@
         [clojure.contrib.find-namespaces :only (find-namespaces-in-dir)])
   (:require [circumspec.assert :as ca]))
 
+;; TODO: rename to -result, with spec-description as result-template
 (defn pass-description
   [spec-description]
   (assoc spec-description :pass 1))
+
+(defn pending-description
+  [spec-description]
+  (assoc spec-description :pending 1))
 
 (defn fail-description
   [spec-description assert-failed-exception]
@@ -23,13 +28,15 @@
 (defn run-spec
   [var]
   (let [spec-desc (spec-description var)]
-    (try
-     (@var)
-     (pass-description spec-desc)
-     (catch circumspec.AssertFailed afe
-       (fail-description spec-desc afe))
-     (catch Throwable t
-       (error-description spec-desc t)))))
+    (if (pending? var)
+      (pending-description spec-desc)
+      (try
+       (@var)
+       (pass-description spec-desc)
+       (catch circumspec.AssertFailed afe
+         (fail-description spec-desc afe))
+       (catch Throwable t
+         (error-description spec-desc t))))))
 
 (defn spec-result-seq
   [spec-vars]

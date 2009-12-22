@@ -1,5 +1,7 @@
 (ns circumspec.utils
-  (:use clojure.contrib.pprint))
+  (:use clojure.contrib.pprint
+        [clojure.contrib.seq-utils :only (flatten)]
+        [clojure.contrib.java-utils :only (as-str)]))
 
 (defn pop-optional-args
   "Pops args from coll as/if they match preds. Used for binding forms
@@ -28,3 +30,17 @@
   [x]
   (with-out-str (pprint x)))
 
+(defn java-props->sh-args
+  "Convert map of java environment props into args usable in
+   a call to shell-out."
+  [props-map]
+  (map
+   (fn [[k v]] (str "-D" (as-str k) "=" v))
+   props-map))
+
+(defn resolve!
+  "Like core/resolve, but throw if not found."
+  [s]
+  (or
+   (resolve s)
+   (throw (RuntimeException. (str "Unable to resolve " s " in " *ns*)))))

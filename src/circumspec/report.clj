@@ -13,6 +13,10 @@
   [text]
   (colorize text :green))
 
+(defn pending-string
+  [text]
+  (colorize text :yellow))
+
 (defn fail?
   [result]
   (boolean (result :fail)))
@@ -20,6 +24,10 @@
 (defn error?
   [result]
   (boolean (result :error)))
+
+(defn pending?
+  [result]
+  (boolean (result :pending)))
 
 (defn result-name
   [result]
@@ -34,4 +42,5 @@
   (cond
    (fail? result) :red
    (error? result) :red
+   (pending? result) :yellow
    :default :green))

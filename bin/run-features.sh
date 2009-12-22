@@ -1,0 +1,1 @@
+./bin/run-tests.sh -Dcircumspec.test-dir=features -Dcircumspec.test-regex='-feature$'

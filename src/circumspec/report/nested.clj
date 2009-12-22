@@ -29,6 +29,7 @@
   (cond
    (fail? result) (failure-string (str " FAILED\n" (default-fail-message result)))
    (error? result) (error-string (str " ERROR\n" (default-error-message result)))
+   (pending? result) (pending-string " PENDING\n")
    :default ""))
 
 (defn report

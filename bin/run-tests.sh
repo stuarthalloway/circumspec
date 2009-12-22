@@ -1,0 +1,1 @@
+java $@ -Xmx1G -cp test:src:classes:features:lib/clojure.jar:lib/clojure-contrib.jar clojure.main -e "(use 'circumspec.cli) (run-tests)"

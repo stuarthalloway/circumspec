@@ -3,6 +3,7 @@
 (def color-table
   {:red "[31m"
    :green "[32m"
+   :yellow "[33m"
    :black "[0m"})
 
 (defn str->ansi-color-str

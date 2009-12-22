@@ -15,6 +15,6 @@
     (assert (throws? ArithmeticException "Divide by zero" (/ 1 f)))
     (assert (throws? ArithmeticException #"by" (/ 1 f)))))
 
-(describe assert-exception-matches
+(describe a/assert-exception-matches
   (assert (a/assert-exception-matches nil "boom" (Throwable. "boom"))))
 

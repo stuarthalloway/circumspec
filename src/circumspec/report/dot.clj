@@ -5,7 +5,8 @@
   [result]
   (cond
    (fail? result) (failure-string \F)
-   (error? result) (error-string \E) 
+   (error? result) (error-string \E)
+   (pending? result) (pending-string \P)
    :default (success-string \.)))
 
 (defn report

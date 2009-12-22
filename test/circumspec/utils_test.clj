@@ -1,5 +1,5 @@
 (ns circumspec.utils-test
-  (:refer-clojure :exclude (assert))
+  (:refer-clojure :exclude [assert])
   (:use circumspec circumspec.utils))
 
 (describe pop-optional-args
@@ -15,3 +15,13 @@
              false 'dribble.dribble.Shoot
              true 'String
              true 'java.lang.String))
+
+(describe java-props->sh-args
+  (for-these [output input] (assert (= output (java-props->sh-args input)))
+             ["-Dfoo=bar"] {:foo "bar"}
+             ["-Dbaz=quux"] {"baz" "quux"}
+             ["-Done=1" "-Dtwo=2"] {:one "1" :two "2"}))
+
+(describe resolve!
+  (it "resolves variables if possible"))
+
