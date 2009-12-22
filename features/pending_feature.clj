@@ -25,6 +25,6 @@
   (assert "dot reporting"
     (= "P\n"
        (run-circumspec-tests {:circumspec.test-regex "pending-example$"
-                              :circumspec.report "dot"
+                              :circumspec.report-function "dot"
                               :circumspec.test-dir "features"
                               :circumspec.colorize "false"}))))
