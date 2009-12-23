@@ -19,7 +19,7 @@
 
 (defn fail?
   [result]
-  (boolean (result :fail)))
+  (boolean (result :failure)))
 
 (defn error?
   [result]

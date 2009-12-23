@@ -5,9 +5,9 @@
   (:require [circumspec.assert :as ca]))
 
 ;; TODO: rename to -result, with spec-description as result-template
-(defn pass-description
+(defn success-description
   [spec-description]
-  (assoc spec-description :pass 1))
+  (assoc spec-description :success 1))
 
 (defn pending-description
   [spec-description]
@@ -17,7 +17,7 @@
   [spec-description assert-failed-exception]
   (merge (.details assert-failed-exception)
          spec-description
-         {:fail 1}))
+         {:failure 1}))
 
 (defn error-description
   [spec-description throwable]
@@ -32,7 +32,7 @@
       (pending-description spec-desc)
       (try
        (@var)
-       (pass-description spec-desc)
+       (success-description spec-desc)
        (catch circumspec.AssertFailed afe
          (fail-description spec-desc afe))
        (catch Throwable t
