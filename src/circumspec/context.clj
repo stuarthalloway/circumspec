@@ -3,7 +3,7 @@
         [clojure.contrib.str-utils :only (re-gsub)]
         [clojure.contrib.seq-utils :only (flatten)]
         [circumspec.should :only (reorder-form)]
-        [circumspec.utils :only (resolve!)]))
+        [circumspec.utils :only (resolve! defn!)]))
 
 (defvar *context* ()
   "Stack of contexts")
@@ -60,7 +60,7 @@
   "Create a test function named after desc, recording
    the context in metadata"
   [desc & forms]
-  `(defn ~(with-meta (test-function-name desc) (test-function-metadata desc forms))
+  `(defn! ~(with-meta (test-function-name desc) (test-function-metadata desc forms))
      "Generated test from the it macro."
      []
      ~@(map reorder-form forms)))
