@@ -7,7 +7,7 @@
 (defn tally
   [result-seq]
   (reduce
-   #(merge-with + %1 %2)
+   #(apply merge-with + %&)
    (map #(select-keys % [:success :failure :error :pending]) result-seq)))
 
 (defn report-tally
