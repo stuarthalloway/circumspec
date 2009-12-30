@@ -112,14 +112,14 @@
 (defmethod assert-body :throws
   [options throws-args]
   (let [[_ expected-type expected-message body] (pop-optional-args [symbol? class-symbol? string-or-regex?] throws-args)]
-    `(try
-      (do
-        ~@body
-        (fail (merge ~options {:expected ~expected-type :actual nil})))
-      (catch ~expected-type expected-instance#
-        (assert-exception-matches ~options ~expected-message expected-instance#))
-      (catch Throwable actual-instance#
-        (fail (merge ~options {:expected '~throws-args :actual actual-instance#}))))))
+    `(let [failed?# (Object.)]
+       (if (= failed?# (try
+                        (do
+                          ~@body
+                          failed?#)
+                        (catch ~expected-type expected-instance#
+                          (assert-exception-matches ~options ~expected-message expected-instance#))))
+         (fail (merge ~options {:expected ~expected-type :actual nil}))        ))))
 
 (defn as-assert-options
   "Coerce assert options from caller convenience to form used
