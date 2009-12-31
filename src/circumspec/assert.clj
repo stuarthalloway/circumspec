@@ -70,21 +70,21 @@
 ;; TODO: intelligence for false/false case
 ;; TODO: chain out on first 
 (defmulti assert-body
-  (fn [options form]
+  (fn [form options]
     (when (seq? form)
       (cond
        (= 'throws? (first form)) :throws
        (function? (first form)) :predicate))))
 
 (defmethod assert-body :default
-  [options form]
+  [form options]
   `(let [value# ~form]
      (if value#
        true
        (fail (merge ~options {:expected '~form :actual value#})))))
 
 (defmethod assert-body :predicate
-  [options [pred & args :as form]]
+  [[pred & args :as form] options]
   `(let [values# (list ~@args)
          result# (apply ~pred values#)]
      (if result#
@@ -111,7 +111,7 @@
     true))
 
 (defmethod assert-body :throws
-  [options throws-args]
+  [throws-args options]
   (let [[_ expected-type expected-message body] (pop-optional-args [symbol? class-symbol? string-or-regex?] throws-args)]
     `(let [failed?# (Object.)]
        (if (= failed?# (try
@@ -135,9 +135,9 @@
    or a map including :message plus any other information you
    want to pass to the handler."
   ([form]
-     `(assert nil ~form))
-  ([options form]
-     `~(assert-body (as-assert-options options) form)))
+     `(assert ~form nil))
+  ([form options]
+     `~(assert-body form (as-assert-options options))))
 
 (defmacro warn-unless
   "form *should* be true, but this requirement is not necessary
@@ -146,9 +146,9 @@
    Useful as a design tool, especially when integrating with
    other code."
   ([form]
-     `(assert {:warn true} ~form))
-  ([options form]
-     `(assert (assoc (as-assert-options ~options) :warn true) ~form)))
+     `(assert ~form {:warn true}))
+  ([form options]
+     `(assert ~form (assoc (as-assert-options ~options) :warn true))))
 
 
 

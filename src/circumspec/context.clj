@@ -36,6 +36,12 @@
            {:circumspec/pending true}
            {})))
 
+(defn =>-assertion?
+  [form]
+  (and (sequential? form)
+       (> (count form) 2)
+       (= '=> (last (butlast form)))))
+
 (defmacro describe
   "Execute forms with desc pushed onto the spec context."
   [desc & forms]

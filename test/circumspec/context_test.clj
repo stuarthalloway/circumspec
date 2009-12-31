@@ -15,3 +15,13 @@
                 :circumspec/context  'circumspec.context/*context*
                 :circumspec/pending true}
                (c/test-function-metadata "foo" '())))))
+
+(testing "=>-assertion?"
+  (assert (false? (c/=>-assertion? nil)))
+  (assert (false? (c/=>-assertion? [])))
+  (assert (false? (c/=>-assertion? '[a])))
+  (assert (false? (c/=>-assertion? '[a =>])))
+  (assert (false? (c/=>-assertion? '[=> a])))
+  (assert (false? (c/=>-assertion? '[a => b c])))
+  (assert (true? (c/=>-assertion? '[a => b])))
+  (assert (true? (c/=>-assertion? '[a b => c]))))
