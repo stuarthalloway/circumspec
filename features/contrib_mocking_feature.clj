@@ -3,7 +3,7 @@
   (:use circumspec 
         [feature-helpers :only (run-circumspec-tests)]))
 
-(describe "a single test with failed mocking expectation"
+(testing "a single test with failed mocking expectation"
   (let [results (run-circumspec-tests {:circumspec.test-regex "contrib-mocking-example$"
                                        :circumspec.report-function "dot"
                                        :circumspec.test-dir "features"

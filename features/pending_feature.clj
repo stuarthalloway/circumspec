@@ -3,7 +3,7 @@
   (:use circumspec 
         [feature-helpers :only (run-circumspec-tests)]))
 
-(describe "a single pending test"
+(testing "a single pending test"
   (let [results (run-circumspec-tests {:circumspec.test-regex "pending-example$"
                                        :circumspec.report-function "dot"
                                        :circumspec.test-dir "features"

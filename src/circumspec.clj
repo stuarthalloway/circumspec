@@ -14,7 +14,7 @@
             (intern *ns* sym)))))))
 
 (migrate
- {'circumspec.context '[describe it]
+ {'circumspec.context '[describe it testing]
   'circumspec.for '[for-these]
   'circumspec.assert '[assert warn-unless]})
 

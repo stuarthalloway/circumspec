@@ -3,7 +3,7 @@
   (:use circumspec 
         [feature-helpers :only (run-circumspec-tests)]))
 
-(describe "a single error test"
+(testing "a single error test"
   (let [results (run-circumspec-tests {:circumspec.test-regex "error-example$"
                                        :circumspec.report-function "dot"
                                        :circumspec.test-dir "features"

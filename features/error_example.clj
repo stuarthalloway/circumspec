@@ -2,5 +2,5 @@
   (:refer-clojure :exclude (assert))
   (:use circumspec))
 
-(describe "example error test"
+(testing "example error test"
   (throw (RuntimeException. "boom")))

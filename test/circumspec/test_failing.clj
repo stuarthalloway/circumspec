@@ -12,16 +12,8 @@
   ((+ 1 41) should = 43))
 
   (it
-   "should fail (throws an error)"
-   ((/ 3 0) should = 0))
-
-  (it
    "should fail (error not thrown)"
    ((+ 1 2) should throw ArithmeticException))
-
-  (it
-   "should fail (wrong error thrown)"
-   ((/ 3 0) should throw NullPointerException))
 
   (it
    "should fail (wrong message)"

@@ -68,6 +68,7 @@
   (raise assert-failed options))
 
 ;; TODO: intelligence for false/false case
+;; TODO: chain out on first 
 (defmulti assert-body
   (fn [options form]
     (when (seq? form)

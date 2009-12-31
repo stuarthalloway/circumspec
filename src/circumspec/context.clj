@@ -1,5 +1,5 @@
 (ns circumspec.context
-  (:use [clojure.contrib.def :only (defvar)]
+  (:use [clojure.contrib.def :only (defvar defalias)]
         [clojure.contrib.str-utils :only (re-gsub)]
         [clojure.contrib.seq-utils :only (flatten)]
         [circumspec.should :only (reorder-form)]
@@ -7,16 +7,6 @@
 
 (defvar *context* ()
   "Stack of contexts")
-
-(defn context-form?
-  [f]
-  (boolean (and (sequential? f)
-                (#{'describe 'it} (first f)))))
-
-(defn expand-body-forms
-  [desc forms]
-  (when (seq forms)
-    `(it ~desc ~@forms)))
 
 (defn expand-subcontext-forms
   [desc forms]
@@ -27,13 +17,14 @@
 (defn dasherize [s]
   (re-gsub #"\s+" "-" s))
 
+; TODO: does not work with macro names or ns prefixes
 (defn test-function-name
   "Create a test function name. If the provided desc is a var,
    append suffix to prevent name collision between var and test.
    If desc is a human friendly string, dasherize it."
   [desc]
-  (symbol (if (var? desc)
-            (str (.sym desc) "-test")
+  (symbol (if (and (symbol? desc) (resolve desc))
+            (str desc "-test")
             (dasherize (str desc)))))
 
 (defn test-function-metadata
@@ -48,14 +39,10 @@
 (defmacro describe
   "Execute forms with desc pushed onto the spec context."
   [desc & forms]
-  (let [desc (if (symbol? desc) (resolve! desc) desc)
-        body-forms (remove context-form? forms)
-        context-forms (filter context-form? forms )]
+  (let [desc (if (symbol? desc) (resolve! desc) desc)]
     `(do
-       ~(expand-body-forms desc body-forms)
-       ~(expand-subcontext-forms desc context-forms))))
+       ~(expand-subcontext-forms desc forms))))
 
-;; TODO: if defn collides with an existing symbol, stop for name collision
 (defmacro it
   "Create a test function named after desc, recording
    the context in metadata"
@@ -64,6 +51,8 @@
      "Generated test from the it macro."
      []
      ~@(map reorder-form forms)))
+
+(defalias testing it)
 
 (defn spec?
   "Does var refer to a spec?"
