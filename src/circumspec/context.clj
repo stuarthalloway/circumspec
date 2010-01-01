@@ -1,7 +1,9 @@
 (ns circumspec.context
+  (:refer-clojure :exclude [assert])
   (:use [clojure.contrib.def :only (defvar defalias)]
         [clojure.contrib.str-utils :only (re-gsub)]
         [clojure.contrib.seq-utils :only (flatten)]
+        [circumspec.assert :only (assert)]
         [circumspec.should :only (reorder-form)]
         [circumspec.utils :only (resolve! defn!)]))
 
@@ -17,14 +19,17 @@
 (defn dasherize [s]
   (re-gsub #"\s+" "-" s))
 
+(defn denamespace [s]
+  (re-gsub #".*/" "" s))
+
 ; TODO: does not work with macro names or ns prefixes
 (defn test-function-name
   "Create a test function name. If the provided desc is a var,
    append suffix to prevent name collision between var and test.
    If desc is a human friendly string, dasherize it."
   [desc]
-  (symbol (if (and (symbol? desc) (resolve desc))
-            (str desc "-test")
+  (symbol (if (symbol desc)
+            (str  (denamespace (str desc)) "-test")
             (dasherize (str desc)))))
 
 (defn test-function-metadata
@@ -41,6 +46,20 @@
   (and (sequential? form)
        (> (count form) 2)
        (= '=> (last (butlast form)))))
+
+(defn rewrite-=>
+  [fn form]
+  (let [c (count form)]
+    `(assert
+         (= (apply ~fn ~(apply vector (take (- c 2) form)))
+            ~(last form)))))
+
+(defmacro describe-function
+  [fn-name & forms]
+  `(defn! ~(with-meta (test-function-name fn-name) (test-function-metadata fn-name forms))
+     "Generated test from the describe-function macro."
+     []
+     ~@(map #(rewrite-=> fn-name %) forms)))
 
 (defmacro describe
   "Execute forms with desc pushed onto the spec context."

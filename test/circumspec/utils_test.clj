@@ -11,17 +11,15 @@
              [1 2 []] [[odd? even?] [1 2]]
              ['throws? IllegalArgumentException [0]] [[symbol? class?] ['throws? IllegalArgumentException 0]]))
 
-(testing class-symbol?
-  (for-these [output input] (assert (= output (class-symbol? input)))
-             false 'dribble.dribble.Shoot
-             true 'String
-             true 'java.lang.String))
+(describe-function class-symbol?
+  ('dribble.dribble.Shoot => false)
+  ('String => true)
+  ('java.lang.String => true))
 
-(testing java-props->sh-args
-  (for-these [output input] (assert (= output (java-props->sh-args input)))
-             ["-Dfoo=bar"] {:foo "bar"}
-             ["-Dbaz=quux"] {"baz" "quux"}
-             ["-Done=1" "-Dtwo=2"] {:one "1" :two "2"}))
+(describe-function java-props->sh-args
+  ({:foo "bar"} => ["-Dfoo=bar"])
+  ({"baz" "quux"} => ["-Dbaz=quux"])
+  ({:one "1" :two "2"} => ["-Done=1" "-Dtwo=2"]))
 
 (describe resolve!
   (it "resolves variables if possible"))
