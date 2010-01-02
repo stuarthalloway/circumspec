@@ -2,6 +2,7 @@
   (:require [circumspec.report dot nested])
   (:use [circumspec.config])
   (:use [circumspec.colorize :only (*colorize*)])
+  (:require [circumspec.raw :as raw])
   (:use [circumspec.runner :only (namespace-result-seq test-namespaces)]))
 
 (defn tally
@@ -33,5 +34,6 @@
           tally (tally results)]
       ((report-function) results)
       (report-tally tally)
+      (raw/dump-results results)
       (shutdown-agents)
       (System/exit (exit-code tally)))))

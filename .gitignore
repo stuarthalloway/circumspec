@@ -3,3 +3,4 @@ circumspec.jar
 classes
 local.properties
 lib/*.jar
+.circumspec

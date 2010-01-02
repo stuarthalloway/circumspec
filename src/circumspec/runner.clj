@@ -25,14 +25,23 @@
          {:error 1
           :throwable throwable}))
 
+(defmacro with-timing
+  "Time body, which should return a map. Merge the execution
+   time into the result under the :nsec key."
+  [& body]
+  `(let [start# (System/nanoTime)
+         result# (do ~@body)]
+     (assoc result# :nsec (- (System/nanoTime) start#))))
+
 (defn run-spec
   [var]
   (let [spec-desc (spec-description var)]
     (if (pending? var)
       (pending-description spec-desc)
       (try
-       (@var)
-       (success-description spec-desc)
+       (with-timing
+         (@var)
+         (success-description spec-desc))
        (catch circumspec.AssertFailed afe
          (fail-description spec-desc afe))
        (catch Throwable t
