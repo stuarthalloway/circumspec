@@ -4,20 +4,26 @@
         [circumspec.assert :only (default-fail-message default-error-message)]
         [clojure.contrib.str-utils :only (str-join)]))
 
-(defn- indent [s] (str " " s))
+(def indents
+  (iterate #(str "  " %) ""))
+
+(defn indent
+  "Indent string s to level."
+  [level s]
+  (str (nth indents level) s))
 
 (defn- descriptions-match
   [[indentation old-desc new-desc]]
   (= old-desc new-desc))
 
 (defn- add-indentation
-  [[indentation _ new-desc]]
-  (str indentation new-desc))
+  [[level _ new-desc]]
+  (indent level new-desc))
 
 (defn context-string
   [last-result this-result]
   (->> (map vector
-        (iterate indent "")
+        (iterate inc 0)
         (concat (result-context last-result) (repeat nil))
         (concat (result-context this-result) [(colorize (result-name this-result) (result-color this-result))]))
        (drop-while descriptions-match)
@@ -37,3 +43,4 @@
   (doseq [[last-result this-result] (partition 2 1 (cons nil results))]
     (print (success-string (context-string last-result this-result)))
     (println (status this-result))))
+

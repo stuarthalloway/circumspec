@@ -5,21 +5,21 @@
   (:require [circumspec.assert :as ca]))
 
 ;; TODO: rename to -result, with spec-description as result-template
-(defn success-description
+(defn success-result
   [spec-description]
   (assoc spec-description :success 1))
 
-(defn pending-description
+(defn pending-result
   [spec-description]
   (assoc spec-description :pending 1))
 
-(defn fail-description
+(defn fail-result
   [spec-description assert-failed-exception]
   (merge (.details assert-failed-exception)
          spec-description
          {:failure 1}))
 
-(defn error-description
+(defn error-result
   [spec-description throwable]
   (merge spec-description
          {:error 1
@@ -33,19 +33,21 @@
          result# (do ~@body)]
      (assoc result# :nsec (- (System/nanoTime) start#))))
 
+(def *current-spec* nil)
+
 (defn run-spec
   [var]
-  (let [spec-desc (spec-description var)]
+  (binding [*current-spec* (spec-description var)]
     (if (pending? var)
-      (pending-description spec-desc)
+      (pending-result *current-spec*)
       (try
        (with-timing
          (@var)
-         (success-description spec-desc))
+         (success-result *current-spec*))
        (catch circumspec.AssertFailed afe
-         (fail-description spec-desc afe))
+         (fail-result *current-spec* afe))
        (catch Throwable t
-         (error-description spec-desc t))))))
+         (error-result *current-spec* t))))))
 
 (defn spec-result-seq
   [spec-vars]

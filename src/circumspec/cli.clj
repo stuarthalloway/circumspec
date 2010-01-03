@@ -29,10 +29,11 @@
    ending in -test."
   []
   (binding [*colorize* (colorize)]
-    (let [results (namespace-result-seq
+    (let [report (report-function)
+          results (namespace-result-seq
                    (test-namespaces (test-dir) (test-regex)))
           tally (tally results)]
-      ((report-function) results)
+      (report results)
       (report-tally tally)
       (raw/dump-results results)
       (shutdown-agents)

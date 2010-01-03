@@ -56,7 +56,7 @@
 
 (defmacro describe-function
   [fn-name & forms]
-  `(defn! ~(with-meta (test-function-name fn-name) (test-function-metadata fn-name forms))
+  `(defn! ~(with-meta (test-function-name fn-name) (test-function-metadata (resolve fn-name) forms))
      "Generated test from the describe-function macro."
      []
      ~@(map #(rewrite-=> fn-name %) forms)))
