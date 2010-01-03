@@ -25,22 +25,40 @@
   (->> (map vector
         (iterate inc 0)
         (concat (result-context last-result) (repeat nil))
-        (concat (result-context this-result) [(colorize (result-name this-result) (result-color this-result))]))
+        (concat (result-context this-result)))
        (drop-while descriptions-match)
        (map add-indentation)
        (str-join "\n")))
 
-(defn status
+(defn active-line
   [result]
-  (cond
-   (fail? result) (failure-string (str " FAILED\n" (default-fail-message result)))
-   (error? result) (error-string (str " ERROR\n" (default-error-message result)))
-   (pending? result) (pending-string " PENDING\n")
-   :default ""))
+  (let [context-depth (count (:context result))]
+    (indent context-depth (:name result))))
+
+(defn story-string
+  [result]
+  (let [context-depth (count (:context result))]
+    (str-join "\n" (map #(indent context-depth %) (:story result)))))
+
+(defn result-string
+  [result]
+  (let [active-line (active-line result)]
+    (cond
+     (fail? result) (failure-string (str active-line " FAILED\n" (default-fail-message result)))
+     (error? result) (error-string (str active-line " ERROR\n" (default-error-message result)))
+     (pending? result) (pending-string (str active-line " PENDING\n"))
+     :default (success-string active-line))))
+
+(defn report-string
+  [last-result this-result]
+  (str-join
+   "\n"
+   (remove empty? [(success-string (context-string last-result this-result))
+                   (success-string (story-string this-result))
+                   (result-string this-result)])))
 
 (defn report
   [results]
   (doseq [[last-result this-result] (partition 2 1 (cons nil results))]
-    (print (success-string (context-string last-result this-result)))
-    (println (status this-result))))
+    (println (report-string last-result this-result))))
 

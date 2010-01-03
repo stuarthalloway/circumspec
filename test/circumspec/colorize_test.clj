@@ -4,6 +4,9 @@
   (:refer-clojure :exclude (assert)))
 
 (describe colorize
+  (it "does not colorize empty strings!"
+    (binding [*colorize* true]
+      (assert (= "" (colorize "" :green)))))
   (it "colors when *colorize* is true"
     (binding [*colorize* true]
       (assert (= (str (char 27) "[32mfoo" (char 27) "[0m") (colorize "foo" :green)))))

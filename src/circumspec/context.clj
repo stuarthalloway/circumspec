@@ -7,8 +7,8 @@
         [circumspec.should :only (reorder-form)]
         [circumspec.utils :only (resolve! defn!)]))
 
-(defvar *context* ()
-  "Stack of contexts")
+(defvar *context* []
+  "Active contexts")
 
 (defn expand-subcontext-forms
   [desc forms]

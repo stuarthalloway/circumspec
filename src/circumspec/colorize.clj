@@ -14,9 +14,9 @@
 (def *colorize* true)
 
 (defn colorize
-  "Wrap text in color if *colorize* true, else return text."
+  "Wrap text in color if nonempty && *colorize* true, else return text."
   [text color]
-  (if *colorize*
+  (if (and *colorize* (seq text))
     (str (str->ansi-color-str color) text (str->ansi-color-str :black))
     text))
 
