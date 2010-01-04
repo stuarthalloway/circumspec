@@ -4,6 +4,14 @@
   (:require [circumspec.context :as c]))
 
 (describe "circumspec.context"
+  (testing "c/calls-describe?"
+    (for-these [result form] (assert (= result (c/calls-describe? form)))
+               false nil
+               false '(random stuff)
+               true '(describe "stuff")
+               false '(not a describe)
+               true '(foo (describe "inner"))))
+
   (describe c/test-function-metadata
     (testing "with a non-empty body"
       (assert (= {:circumspec/spec true

@@ -61,6 +61,18 @@
      []
      ~@(map #(rewrite-=> fn-name %) forms)))
 
+(declare describe)
+
+;; TODO: namespace resolution
+(defn calls-describe?
+  [form]
+  (letfn [(f [form]
+             (cond
+              (and (list? form) (= 'describe (first form))) true
+              (sequential? form) (some f (rest form))
+              :default false))]
+    (boolean (f form))))
+
 (defmacro describe
   "Execute forms with desc pushed onto the spec context."
   [desc & forms]
