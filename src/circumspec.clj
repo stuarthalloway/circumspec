@@ -1,5 +1,4 @@
-(ns circumspec
-  (:refer-clojure :exclude (assert)))
+(ns circumspec)
 
 (defn- migrate
   "Like immigrate, but takes a map of ns -> varnames."
@@ -16,5 +15,5 @@
 (migrate
  {'circumspec.context '[describe it testing describe-function]
   'circumspec.for '[for-these]
-  'circumspec.assert '[assert warn-unless]})
+  'circumspec.should '[should warn-unless]})
 

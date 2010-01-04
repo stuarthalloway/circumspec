@@ -1,10 +1,8 @@
 (ns circumspec.context
-  (:refer-clojure :exclude [assert])
   (:use [clojure.contrib.def :only (defvar defalias)]
         [clojure.contrib.str-utils :only (re-gsub)]
         [clojure.contrib.seq-utils :only (flatten)]
-        [circumspec.assert :only (assert)]
-        [circumspec.should :only (reorder-form)]
+        [circumspec.should :only (should)]
         [circumspec.utils :only (resolve! defn!)]))
 
 (defvar *context* []
@@ -50,7 +48,7 @@
 (defn rewrite-=>
   [fn form]
   (let [c (count form)]
-    `(assert
+    `(should
          (= (apply ~fn ~(apply vector (take (- c 2) form)))
             ~(last form)))))
 
@@ -87,32 +85,32 @@
   `(defn! ~(with-meta (test-function-name desc) (test-function-metadata desc forms))
      "Generated test from the it macro."
      []
-     ~@(map reorder-form forms)))
+     ~@forms))
 
 (defalias testing it)
 
 (defn spec?
   "Does var refer to a spec?"
   [var]
-  (assert (var? var))
+  (should (var? var))
   (boolean (:circumspec/spec (meta var))))
 
 (defn spec-name
   "Name of a spec"
   [var]
-  (assert (var? var))
+  (should (var? var))
   (:circumspec/name (meta var)))
 
 (defn pending?
   "Is spec pending?"
   [var]
-  (assert (var? var))
+  (should (var? var))
   (boolean (:circumspec/pending (meta var))))
 
 (defn spec-description
   "Description of a spec (:context and :name)"
   [var]
-  (assert (var? var))
+  (should (var? var))
   {:context (:circumspec/context (meta var))
    :name (:circumspec/name (meta var))})
 

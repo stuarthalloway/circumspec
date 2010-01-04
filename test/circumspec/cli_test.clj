@@ -1,11 +1,10 @@
 (ns circumspec.cli-test
   (:use circumspec
-        circumspec.cli)
-  (:refer-clojure :exclude (assert)))
+        circumspec.cli))
 
 (describe "tally"
   (it "sums the success, failure, error, and pending keys in sequence of results"
-    (for-these [tallied result-seq] (assert (= tallied (tally result-seq)))
+    (for-these [tallied result-seq] (should (= tallied (tally result-seq)))
                nil []
                
                {} [{}]

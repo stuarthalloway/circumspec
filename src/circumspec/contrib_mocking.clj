@@ -2,7 +2,7 @@
 (ns circumspec.contrib-mocking
   (:require [clojure.contrib.mock :as mock])
   (:use [clojure.contrib.ns-utils :only (immigrate)]
-        [circumspec.assert :only (fail)])) 
+        [circumspec.should :only (fail)])) 
 
 (immigrate 'clojure.contrib.mock)
 

@@ -1,22 +1,20 @@
 (ns failure-example
-  (:refer-clojure :exclude (assert))
   (:use circumspec))
 
 (describe "failures"
   (testing "throws? with no body should fail"
-    (assert (throws? Exception)))
+    (should (throws? Exception)))
 
   (testing "not equal should fail"
-    ((+ 1 41) should = 43))
+    (should (= (+ 1 41) 43)))
 
   (testing "error not thrown should fail"
-    ((+ 1 2) should throw ArithmeticException))
+    (should (throws? ArithmeticException (+ 1 2))))
 
   (testing "wrong error message should fail"
-    ((/ 3 0) should throw ArithmeticException "Boom"))
+    (let [x 0]
+      (should (throws? ArithmeticException "Boom" (/ 3 x)))))
 
   (testing "incomplete string match should fail"
-    ((/ 3 0) should throw ArithmeticException "zero"))
-
-  (testing "failed predicate"
-    (1 should be even)))
+    (let [x 0]
+      (should (throws? ArithmeticException "zero" (/ 3 x))))))

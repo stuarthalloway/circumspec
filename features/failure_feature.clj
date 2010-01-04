@@ -1,5 +1,4 @@
 (ns failure-feature
-  (:refer-clojure :exclude (assert))
   (:use circumspec 
         [feature-helpers :only (run-circumspec-tests)]))
 
@@ -8,9 +7,9 @@
                                        :circumspec.report-function "dot"
                                        :circumspec.test-dir "features"
                                        :circumspec.colorize "false"})]
-    (assert
-      (= (:out results)  "FFFFFF\n0 success, 6 failure, 0 error, 0 pending\n"))
-    (assert
+    (should
+      (= (:out results)  "FFFFF\n0 success, 5 failure, 0 error, 0 pending\n"))
+    (should
       (= (:exit results) 1))
-    (assert
+    (should
       (= (:err results) ""))))

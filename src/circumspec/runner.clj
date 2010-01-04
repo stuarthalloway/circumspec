@@ -1,8 +1,7 @@
 (ns circumspec.runner
   (:use circumspec.context
         [clojure.contrib.error-kit :only (with-handler handle continue-with)]
-        [clojure.contrib.find-namespaces :only (find-namespaces-in-dir)])
-  (:require [circumspec.assert :as ca]))
+        [clojure.contrib.find-namespaces :only (find-namespaces-in-dir)]))
 
 ;; TODO: rename to -result, with spec-description as result-template
 (defn success-result

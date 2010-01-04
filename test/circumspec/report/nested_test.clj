@@ -1,5 +1,4 @@
 (ns circumspec.report.nested-test
-  (:refer-clojure :exclude [assert])
   (:use circumspec circumspec.report.nested)
   (:use [circumspec.colorize :only (*colorize*)]))
 
@@ -24,7 +23,7 @@
 (describe result-string
   (it "correctly handles full example"
     (binding [*colorize* false]
-      (assert (= (report-string {} {:success 1,
+      (should (= (report-string {} {:success 1,
                                     :story ["a greeter" "I send it the greet message" "I should see 'Hello Circumspec!'"],
                                     :context [], :name "greeter says hello"})
                  "greeter says hello

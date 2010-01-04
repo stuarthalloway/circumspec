@@ -1,7 +1,7 @@
 (ns circumspec.report.nested
   (:use circumspec.report
         [circumspec.colorize :only (colorize)]
-        [circumspec.assert :only (default-fail-message default-error-message)]
+        [circumspec.should :only (default-fail-message default-error-message)]
         [clojure.contrib.str-utils :only (str-join)]))
 
 (def indents

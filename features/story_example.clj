@@ -1,5 +1,5 @@
 (ns story-example
-  (:refer-clojure :exclude [assert when and])
+  (:refer-clojure :exclude [when and])
   (:use circumspec circumspec.story))
 
 (describe "a describe"
@@ -7,4 +7,4 @@
     (describe "and even more nested"
       (testing "a test"
         (given "a given"
-               (assert (= 1 2)))))))
+               (should (= 1 2)))))))

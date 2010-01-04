@@ -1,10 +1,9 @@
 (ns circumspec.utils-test
-  (:refer-clojure :exclude [assert])
   (:use circumspec circumspec.utils
         clojure.contrib.with-ns))
 
 (testing pop-optional-args
-  (for-these [output input] (assert (= output (apply pop-optional-args input)))
+  (for-these [output input] (should (= output (apply pop-optional-args input)))
              [[1 2]] [[] [1 2]]
              [nil [1 2]] [[string?] [1 2]]
              [1 [2]] [[integer?] [1 2]]
@@ -26,12 +25,12 @@
 
 (describe defn!
   (it "lets you define a function once"
-    (assert (= (with-temp-ns (eval '(do
+    (should (= (with-temp-ns (eval '(do
                                       (circumspec.utils/defn! fn-defined-only-once [] :retval)
                                       (fn-defined-only-once))))
                :retval)))
   (it "throws an exception if you try to define a function twice"
-    (assert (throws?
+    (should (throws?
              clojure.lang.Compiler$CompilerException #"^java.lang.RuntimeException: The name example-fn is already bound in sym.*$"
              (with-temp-ns (eval '(do
                                     (circumspec.utils/defn! example-fn [])
