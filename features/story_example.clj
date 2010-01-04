@@ -1,5 +1,5 @@
 (ns story-example
-  (:refer-clojure :exclude [assert])
+  (:refer-clojure :exclude [assert when and])
   (:use circumspec circumspec.story))
 
 (describe "a describe"

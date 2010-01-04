@@ -20,42 +20,59 @@
   [[level _ new-desc]]
   (indent level new-desc))
 
-(defn context-string
+(defn context-lines
+  "Return the context-lines for a result. Contexts nest, and appear before
+   the name line."
   [last-result this-result]
   (->> (map vector
         (iterate inc 0)
         (concat (result-context last-result) (repeat nil))
         (concat (result-context this-result)))
        (drop-while descriptions-match)
-       (map add-indentation)
-       (str-join "\n")))
+       (map add-indentation)))
 
-(defn active-line
+(defn name-line
+  "Return the name line, appropriately indented based on the context."
   [result]
   (let [context-depth (count (:context result))]
     (indent context-depth (:name result))))
 
-(defn story-string
+(defn story-lines
+  "Story lines are within a single test. They appear after the name line,
+   indented one level."
   [result]
-  (let [context-depth (count (:context result))]
-    (str-join "\n" (map #(indent context-depth %) (:story result)))))
+  (let [context-depth (inc (count (:context result)))]
+    (map #(indent context-depth %) (:story result))))
+
+(defn report-lines
+  "Build the report lines from context, name, and story."
+  [last-result this-result]
+  (concat (context-lines last-result this-result)
+          [(name-line this-result)]
+          (story-lines this-result)))
+
+(defn join-lines
+  [lines]
+  (str-join "\n" (remove empty? lines)))
 
 (defn result-string
-  [result]
-  (let [active-line (active-line result)]
-    (cond
-     (fail? result) (failure-string (str active-line " FAILED\n" (default-fail-message result)))
-     (error? result) (error-string (str active-line " ERROR\n" (default-error-message result)))
-     (pending? result) (pending-string (str active-line " PENDING\n"))
-     :default (success-string active-line))))
+  "Given the active line and a result, complete the line with the status
+   message and colorize appropriately."
+  [line result]
+  (cond
+   (fail? result) (failure-string (str line " FAILED\n" (default-fail-message result)))
+   (error? result) (error-string (str line " ERROR\n" (default-error-message result)))
+   (pending? result) (pending-string (str line " PENDING\n"))
+   :default (success-string line))  )
 
 (defn report-string
+  "Colorize all the lines but the last in green, and the last based on
+   the type of the result."
   [last-result this-result]
-  (str-join
-   "\n"
-   (remove empty? [(success-string (context-string last-result this-result))
-                   (success-string (story-string this-result))
-                   (result-string this-result)])))
+  (let [lines (report-lines last-result this-result)]
+    (join-lines
+     [(success-string (join-lines (butlast lines)))
+      (result-string (last lines) this-result)])))
 
 (defn report
   [results]

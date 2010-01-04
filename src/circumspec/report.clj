@@ -19,15 +19,15 @@
 
 (defn fail?
   [result]
-  (boolean (result :failure)))
+  (boolean (:failure result)))
 
 (defn error?
   [result]
-  (boolean (result :error)))
+  (boolean (:error result)))
 
 (defn pending?
   [result]
-  (boolean (result :pending)))
+  (boolean (:pending result)))
 
 (defn result-name
   [result]
