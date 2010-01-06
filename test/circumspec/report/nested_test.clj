@@ -7,6 +7,11 @@
   (1 "bar" => "  bar")
   (2 "baz" => "    baz"))
 
+(describe-function indent-lines
+  (0 nil => nil)
+  (0 "foo\nbar" => "foo\nbar")
+  (1 "foo\nbar" => "  foo\n  bar"))
+
 (describe-function context-lines
   (nil nil => [])
   ({} {} => [])

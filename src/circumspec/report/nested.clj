@@ -2,15 +2,24 @@
   (:use circumspec.report
         [circumspec.colorize :only (colorize)]
         [circumspec.should :only (default-fail-message default-error-message)]
-        [clojure.contrib.str-utils :only (str-join)]))
+        [clojure.contrib.str-utils :only (re-split str-join)]))
 
 (def indents
   (iterate #(str "  " %) ""))
 
-(defn indent
+ (defn indent
   "Indent string s to level."
   [level s]
   (str (nth indents level) s))
+
+(defn indent-lines
+  "Indent each line of string s to level."
+  [level s]
+  (when-not (nil? s)
+    (->> s
+         (re-split #"\n")
+         (map #(indent level %))
+         (str-join "\n"))))
 
 (defn- descriptions-match
   [[indentation old-desc new-desc]]
@@ -59,11 +68,12 @@
   "Given the active line and a result, complete the line with the status
    message and colorize appropriately."
   [line result]
-  (cond
-   (fail? result) (failure-string (str line " FAILED\n" (default-fail-message result)))
-   (error? result) (error-string (str line " ERROR\n" (default-error-message result)))
-   (pending? result) (pending-string (str line " PENDING\n"))
-   :default (success-string line))  )
+  (let [message-depth (inc (count (:context result)))]
+    (cond
+     (fail? result) (failure-string (str line " FAILED\n" (indent-lines message-depth (default-fail-message result))))
+     (error? result) (error-string (str line " ERROR\n" (indent-lines message-depth (default-error-message result))))
+     (pending? result) (pending-string (str line " PENDING\n"))
+     :default (success-string line)))  )
 
 (defn report-string
   "Colorize all the lines but the last in green, and the last based on

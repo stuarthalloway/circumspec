@@ -1,5 +1,6 @@
 (ns error-example
   (:use circumspec))
 
-(testing "example error test"
-  (throw (RuntimeException. "boom")))
+(describe "a single error"
+  (testing "nested to demonstrate report indentation"
+    (throw (RuntimeException. "boom"))))
