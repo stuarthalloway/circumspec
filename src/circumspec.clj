@@ -15,5 +15,5 @@
 (migrate
  {'circumspec.context '[describe it testing describe-function]
   'circumspec.for '[for-these]
-  'circumspec.should '[should warn-unless]})
+  'circumspec.should '[should]})
 

@@ -2,17 +2,10 @@
   (use [clojure.contrib.def :only (defvar)]
        [clojure.test :only (function? *testing-contexts* report)]
        [clojure.contrib.debug :only (debug-repl)]
-       [clojure.contrib.error-kit :only (deferror throw-msg raise handle)]
        [circumspec.utils :only (pop-optional-args class-symbol? pps)]))
 
 (defvar *debug* nil
   "Set to true to make should failures bounce into debug repl.")
-
-(defn warn?
-  "Look at should failed options to see if the failure should
-   warn instead of raising."
-  [options]
-  (boolean (options :warn)))
 
 ;; TODO: refactor, default-message
 (defn default-fail-message
@@ -23,9 +16,7 @@
     :as options}]
   (let [message-prefix (if message (str message "\n") nil)]
     (str
-     "circumspec "
-     (if (warn? options) "warning" "should-assertion failed")
-     ":\n"
+     "circumspec should-assertion failed:\n"
      message-prefix
      "expected " (pps expected)
      "actual " (pps actual))))
@@ -39,32 +30,15 @@
      message-prefix
      "thrown " (with-out-str (.printStackTrace throwable (java.io.PrintWriter. *out*))))))
 
-(deferror should-failed []
-  [options]
-  (merge options 
-         {:msg (default-fail-message options)
-          :unhandled (fn [options] (throw (new circumspec.AssertFailed (:msg options) options)))}))
-
 (defn should-repl [options]
   (println (default-fail-message options))
   (println "Starting debug repl. Type () to end repl and propagate failure.")
   (debug-repl))
 
-(defmulti fail
-  (fn [options]
-    (when *debug* (should-repl options))
-    (cond
-     (warn? options) :warn
-     :default :error)))
-
-(defmethod fail :warn [options]
-  (let [message (default-fail-message options)]
-    (binding [*out* *err*]
-      (println message)))
-  false)
-
-(defmethod fail :error [options]
-  (raise should-failed options))
+(defn fail
+  [options]
+  (when *debug* (should-repl options))
+  (throw (new circumspec.AssertFailed (:msg options) options)))
 
 ;; TODO: intelligence for false/false case
 ;; TODO: chain out on first 
@@ -137,16 +111,6 @@
   ([form options]
      `~(should-body form (as-should-options options))))
 
-(defmacro warn-unless
-  "form *should* be true, but this requirement is not necessary
-   for correct functioning. Functions like should, except that
-   fails default to stderr warnings instead of error-kit raises.
-   Useful as a design tool, especially when integrating with
-   other code."
-  ([form]
-     `(should ~form {:warn true}))
-  ([form options]
-     `(should ~form (assoc (as-should-options ~options) :warn true))))
 
 
 
