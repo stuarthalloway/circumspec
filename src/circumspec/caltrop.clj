@@ -1,83 +1,74 @@
 (ns circumspec.caltrop
-  (:require [clojure.contrib.str-utils2 :as s])
+  (:require [clojure.contrib.str-utils2 :as s]
+            [circumspec.config :as config])
   (:use circumspec
         clojure.set
+        [clojure.contrib.def :only (defalias)]
+        [circumspec.context :only (*context*)]
         [clojure.contrib.duck-streams :only (spit make-parents)]
-        [circumspec.should :only (fail)]
-        [circumspec.context :only (*context*)]))
+        [circumspec.should :only (fail)]))
 
 (defn caltrop-name
   [form]
-  (with-out-str (pr form)))
+  (str (gensym (str (with-out-str (pr form)) "_"))))
 
 (defn regression-file
   ([] (regression-file *ns*))
-  ([ns] (java.io.File. (-> "caltrops/"
-                           (str ns)
-                           (s/replace "." "/")
-                           (s/replace "-" "_")))))
+  ([ns] (-> "caltrops/"
+            (str ns)
+            (s/replace "." "/")
+            (s/replace "-" "_"))))
 
-(defn regression-data-for-current-testfile
-  []
+(defn regression-data-for
+  [ns]
   (try
-   (read-string (slurp (.getPath (regression-file))))
+   (read-string (slurp (regression-file ns)))
    (catch java.io.FileNotFoundException _ {})))
 
-(defn regression-data-for-current-test
-  []
-  (get (regression-data-for-current-testfile) *context*))
-
-(defn caltrop-match
-  [expected]
-  (fn [form]
-    `(testing ~(caltrop-name form)
-       (should (= ~form ~(expected form))))))
-
-(defn caltrop-pending
-  [form]
-  `(testing ~(caltrop-name form)))
-
-(defn caltrop-missing
+(defn caltrop-test
   [form]
   `(testing ~(caltrop-name form)
-     (fail {:expected '~form :actual "Regression data has not matching test"})))
+     (let [ns-regress# (regression-data-for ~*ns*)]
+       (if-let [context-regress# (ns-regress#  *context*)]
+         (if (contains? context-regress# '~form)
+           (should (= ~form (context-regress# '~form)))
+           (fail {:expected (str "Regression data for " '~form) :actual "None found"}))
+         (fail {:expected (str "Regression data for " '~form) :actual "None found"})))))
 
 (def caltrop-baseline
   (ref {}))
 
 (defn save-baseline!
   []
-  (for [[k v] @caltrop-baseline]
-    (doto (regression-file k)
+  (doseq [[k v] @caltrop-baseline]
+    (doto (java.io.File. k)
       (make-parents)
       (spit v))))
 
-(defn caltrop-write-baseline
+(defn caltrop-save-baseline*
   [form]
-  `(testing ~(caltrop-name form)
+  `(it ~(caltrop-name form)
      (dosync
-      (alter caltrop-baseline assoc-in [~(regression-filename) ~*context* '~form] ~form))))
+      (alter caltrop-baseline assoc-in [~(regression-file) *context* '~form] ~form))))
 
-(defmacro caltrops-write
+(defmacro caltrops-save-baseline
   "Capture caltrop data to write"
   [& forms]
   `(do
-     ~@(map caltrop-write-baseline forms)))
+     ~@(map caltrop-save-baseline* forms)))
 
 (defmacro caltrops-test
   "Run the forms and compare the results with those in file filename.
    Fail if any are different"
-    [& forms]
-    (let [baseline (regression-data-for-current-test)
-          expected (set (keys baseline))
-          provided (set forms)
-          missing (difference expected provided)
-          pending (difference provided expected)
-          matching (intersection expected provided)]
-      `(do
-         ~@(map (caltrop-match baseline) matching)
-         ~@(map caltrop-pending pending)
-         ~@(map caltrop-missing missing))))
+  [& forms]
+  `(do
+     ~@(map caltrop-test forms)))
+
+(if (config/write-caltrops)
+  (do
+    (defalias caltrops caltrops-save-baseline))
+  (do
+    (defalias caltrops caltrops-test)))
 
 
 

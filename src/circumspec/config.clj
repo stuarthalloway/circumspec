@@ -19,6 +19,11 @@
         (~constructor
          (System/getProperty ~(str "circumspec." name) ~default-value)))))
 
+(defconfig write-caltrops
+  "Should the tests write caltrops data?"
+  "false"
+  #(#{"yes" "true"} %))
+
 (defconfig colorize
   "Should console output be colorized."
   "true"

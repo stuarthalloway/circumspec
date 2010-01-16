@@ -3,7 +3,8 @@
         [clojure.contrib.str-utils :only (re-gsub)]
         [clojure.contrib.seq-utils :only (flatten)]
         [circumspec.should :only (should)]
-        [circumspec.utils :only (resolve! defn!)]))
+        [circumspec.utils :only (resolve! defn!)])
+  (:require [clojure.contrib.str-utils2 :as s]))
 
 (defvar *context* []
   "Active contexts")
@@ -61,16 +62,6 @@
 
 (declare describe)
 
-;; TODO: namespace resolution
-(defn calls-describe?
-  [form]
-  (letfn [(f [form]
-             (cond
-              (and (list? form) (= 'describe (first form))) true
-              (sequential? form) (some f (rest form))
-              :default false))]
-    (boolean (f form))))
-
 (defmacro describe
   "Execute forms with desc pushed onto the spec context."
   [desc & forms]
@@ -80,12 +71,14 @@
 
 (defmacro it
   "Create a test function named after desc, recording
-   the context in metadata"
+   the context in metadata and resetting the context when
+   the function is evaluated."
   [desc & forms]
   `(defn! ~(with-meta (test-function-name desc) (test-function-metadata desc forms))
      "Generated test from the it macro."
      []
-     ~@forms))
+     (binding [*context* (:circumspec/context (meta (var ~(test-function-name desc))))]
+       ~@forms)))
 
 (defalias testing it)
 

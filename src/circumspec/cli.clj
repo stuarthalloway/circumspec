@@ -3,6 +3,7 @@
   (:use [circumspec.config])
   (:use [circumspec.colorize :only (*colorize*)])
   (:require [circumspec.raw :as raw])
+  (:require [circumspec.caltrop :as caltrop])
   (:use [circumspec.runner :only (namespace-result-seq test-namespaces)]))
 
 (defn tally
@@ -36,5 +37,7 @@
       (report results)
       (report-tally tally)
       (raw/dump-results results)
+      (when (write-caltrops)
+        (caltrop/save-baseline!))
       (shutdown-agents)
       (System/exit (exit-code tally)))))
