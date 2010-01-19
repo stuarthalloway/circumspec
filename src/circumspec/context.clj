@@ -119,17 +119,16 @@
   (map second (ns-publics ns)))
 
 
-(defmulti spec-vars #(if (sequential? %) :namespaces :namespace))
-
-(defmethod spec-vars :namespaces
-  [namespaces]
-  (flatten
-   (map spec-vars namespaces)))
-
-(defmethod spec-vars :namespace
+(defn spec-var
   [ns]
   (require ns)
   (filter spec? (ns-vars ns)))
+
+(defn spec-vars
+  [namespaces]
+  (flatten
+   (map spec-var namespaces)))
+
 
 
 

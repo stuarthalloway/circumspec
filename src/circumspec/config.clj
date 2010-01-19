@@ -40,3 +40,7 @@
 (defconfig test-dir
   "Dir to search for tests"
   "test")
+
+(defconfig src-dir
+  "Dir to search for src"
+  "src")

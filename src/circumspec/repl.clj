@@ -8,3 +8,4 @@
     (doseq [n namespaces]
       (require :reload-all n)))
   ((report-function) (namespace-result-seq namespaces)))
+
