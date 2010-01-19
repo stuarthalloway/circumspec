@@ -45,10 +45,17 @@
    (resolve s)
    (throw (RuntimeException. (str "Unable to resolve " s " in " *ns*)))))
 
+(def *allow-re-defn* false)
+
+(defmacro with-re-defn
+  [& forms]
+  `(binding [*allow-re-defn* true]
+     ~@forms))
+
 (defmacro defn! 
   "Like defn, but raises an error if the name already is bound."
   [name & forms]
   `(let [v# (def ~name)]
-     (if (.hasRoot v#)
+     (if (and (not *allow-re-defn*) (.hasRoot v#))
        (throw (RuntimeException. (str "The name " '~name " is already bound in " *ns*)))
        (defn ~name ~@forms))))
