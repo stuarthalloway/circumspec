@@ -1,7 +1,6 @@
 (ns circumspec.cli
   (:require [circumspec.report dot nested])
   (:use [circumspec.config])
-  (:use [circumspec.colorize :only (*colorize*)])
   (:require [circumspec.raw :as raw])
   (:use [circumspec.runner :only (namespace-result-seq test-namespaces)]))
 
@@ -28,13 +27,12 @@
   "Runs all tests. Assumes tests are in test directory an have namespaces
    ending in -test."
   []
-  (binding [*colorize* (colorize)]
-    (let [report (report-function)
-          results (namespace-result-seq
-                   (test-namespaces (test-dir) (test-regex)))
-          tally (tally results)]
-      (report results)
-      (report-tally tally)
-      (raw/dump-results results)
-      (shutdown-agents)
-      (System/exit (exit-code tally)))))
+  (let [report (report-function)
+        results (namespace-result-seq
+                 (test-namespaces (test-dir) (test-regex)))
+        tally (tally results)]
+    (report results)
+    (report-tally tally)
+    (raw/dump-results results)
+    (shutdown-agents)
+    (System/exit (exit-code tally))))

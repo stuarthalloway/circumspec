@@ -1,6 +1,6 @@
 (ns circumspec.report.nested-test
   (:use circumspec circumspec.report.nested)
-  (:use [circumspec.colorize :only (*colorize*)]))
+  (:use [circumspec.config :only (colorize)]))
 
 (describe-function indent
   (0 "foo" => "foo")
@@ -27,7 +27,7 @@
 
 (describe result-string
   (it "correctly handles full example"
-    (binding [*colorize* false]
+    (binding [colorize (constantly false)]
       (should (= (report-string {} {:success 1,
                                     :story ["a greeter" "I send it the greet message" "I should see 'Hello Circumspec!'"],
                                     :context [], :name "greeter says hello"})

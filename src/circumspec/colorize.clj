@@ -1,4 +1,5 @@
-(ns circumspec.colorize)
+(ns circumspec.colorize
+  (:require [circumspec.config :as config]))
 
 (def color-table
   {:red "[31m"
@@ -11,12 +12,11 @@
   [color]
   (str (char 27) (color-table color)))
 
-(def *colorize* true)
-
 (defn colorize
   "Wrap text in color if nonempty && *colorize* true, else return text."
   [text color]
-  (if (and *colorize* (seq text))
-    (str (str->ansi-color-str color) text (str->ansi-color-str :black))
-    text))
+  (let [text (str text)]
+    (if (and (config/colorize) (seq text))
+      (str (str->ansi-color-str color) text (str->ansi-color-str :black))
+      text)))
 
