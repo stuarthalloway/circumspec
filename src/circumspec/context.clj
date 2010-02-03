@@ -12,7 +12,7 @@
   [desc forms]
   (when (seq forms)
     `(binding [*context* (conj *context* '~desc)]
-       ~@forms)))
+      ~@forms)))
 
 (defn dasherize [s]
   (re-gsub #"\s+" "-" s))
@@ -34,7 +34,7 @@
   [desc forms]
   (merge {:circumspec/spec true
           :circumspec/name desc
-          :circumspec/context 'circumspec.context/*context*}
+          :circumspec/context '(concat [(.name *ns*)] circumspec.context/*context*)}
          (if (empty? forms)
            {:circumspec/pending true}
            {})))

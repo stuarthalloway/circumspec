@@ -15,12 +15,12 @@
     (testing "with a non-empty body"
       (should (= {:circumspec/spec true
                   :circumspec/name "foo"
-                  :circumspec/context 'circumspec.context/*context*}
+                  :circumspec/context '(concat [(.name *ns*)] circumspec.context/*context*)}
                  (c/test-function-metadata "foo" '(list)))))
     (testing "tests with empty bodies are pending"
       (should (= {:circumspec/spec true
                   :circumspec/name "foo"
-                  :circumspec/context  'circumspec.context/*context*
+                  :circumspec/context  '(concat [(.name *ns*)] circumspec.context/*context*)
                   :circumspec/pending true}
                  (c/test-function-metadata "foo" '())))))
 
