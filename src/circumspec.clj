@@ -19,5 +19,5 @@
   'circumspec.should '[should]
   'circumspec.locator '[test-namespaces tests]
   'circumspec.runner '[run-tests]
-  'circumspec.watch '[re-test go stop]})
+  'circumspec.watch '[re-test watch stop]})
 

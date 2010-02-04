@@ -69,9 +69,10 @@
 
 (defn report-tally
   [tally]
-  (println
-   (apply format "%d success, %d failure, %d error, %d pending"
-          (map #(get tally % 0) [:success :failure :error :pending]))))
+  (let [{:keys [success failure error pending nsec]} tally]
+    (println
+     (apply format "%d success, %d failure, %d error, %d pending [%d msec]"
+            (map #(or % 0) [success failure error pending (quot nsec 1000000)])))))
 
 (defn exit-code
   [tally]
@@ -85,18 +86,19 @@
    passed in via tests."
   ([] (run-tests (tests)))
   ([tests]
-     (let [report (config/report-function)
+     (let [start (System/nanoTime)
            results (test-results tests)
-           tally (tally results)]
+           tally (assoc (tally results) :nsec (- (System/nanoTime) start))
+           report (config/report-function)]
        (report results)
        (raw/dump-results results)
+       (report-tally tally)
        tally)))
 
 (defn run-tests-and-exit
   "Run tests and exit the process"
   [& args]
   (let [tally (apply run-tests args)]
-    (report-tally tally)
     (shutdown-agents)
     (System/exit (exit-code tally))))
 

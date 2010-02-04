@@ -4,7 +4,10 @@ Early days. Don't expect things to work or API to be stable. You've been warned.
 
 ## Usage
 
-Read the features and tests directories. Run the scripts in bin. Be brave.
+Read the features and tests directories. Run the scripts in script. Be brave.
+
+The public API is the functions migrated into the circumspec namespace 
+(see src/circumspec.clj)
 
 ## License
 
