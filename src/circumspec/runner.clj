@@ -1,32 +1,33 @@
 (ns circumspec.runner
-  (:use circumspec.context
+  (:use circumspec.test
+        [circumspec.test :only (test-description)]
         [clojure.contrib.error-kit :only (with-handler handle continue-with)]
         [clojure.contrib.find-namespaces :only (find-namespaces-in-dir)]))
 
-;; TODO: rename to -result, with spec-description as result-template
+;; TODO: rename to -result, with test-description as result-template
 (defn success-result
-  [spec-description]
-  (assoc spec-description :success 1))
+  [test-description]
+  (assoc test-description :success 1))
 
 (defn pending-result
-  [spec-description]
-  (assoc spec-description :pending 1))
+  [test-description]
+  (assoc test-description :pending 1))
 
 (defn fail-result
-  [spec-description assert-failed-exception]
+  [test-description assert-failed-exception]
   (merge (.details assert-failed-exception)
-         spec-description
+         test-description
          {:failure 1}))
 
 (defn error-result
-  [spec-description throwable]
-  (merge spec-description
+  [test-description throwable]
+  (merge test-description
          {:error 1
           :throwable throwable}))
 
 (defn base-result
-  [spec-description story]
-  (assoc spec-description :story story))
+  [test-description story]
+  (assoc test-description :story story))
 
 (defmacro with-timing
   "Time body, which should return a map. Merge the execution
@@ -36,31 +37,31 @@
          result# (do ~@body)]
      (assoc result# :nsec (- (System/nanoTime) start#))))
 
-(def *current-spec* nil)
+(def *current-test* nil)
 (def *story* nil)
 
-(defn run-spec
+(defn run-test
   [var]
-  (binding [*current-spec* (spec-description var)
+  (binding [*current-test* (test-description var)
             *story* []]
     (if (pending? var)
-      (pending-result *current-spec*)
+      (pending-result *current-test*)
       (try
        (with-timing
          (@var)
-         (success-result (base-result *current-spec* *story*)))
+         (success-result (base-result *current-test* *story*)))
        (catch circumspec.AssertFailed afe
-         (fail-result (base-result *current-spec* *story*) afe))
+         (fail-result (base-result *current-test* *story*) afe))
        (catch Throwable t
-         (error-result (base-result *current-spec* *story*) t))))))
+         (error-result (base-result *current-test* *story*) t))))))
 
-(defn spec-result-seq
-  [spec-vars]
-  (map run-spec spec-vars))
+(defn test-result-seq
+  [test-vars]
+  (map run-test test-vars))
 
 (defn namespace-result-seq
   [namespaces]
-  (spec-result-seq (spec-vars namespaces)))
+  (test-result-seq (tests namespaces)))
 
 (defn test-namespaces
   "Find test namespaces in basedir matching regexp"

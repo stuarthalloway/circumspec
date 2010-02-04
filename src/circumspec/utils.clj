@@ -1,7 +1,8 @@
 (ns circumspec.utils
   (:use clojure.contrib.pprint
         [clojure.contrib.seq-utils :only (flatten)]
-        [clojure.contrib.java-utils :only (as-str)]))
+        [clojure.contrib.java-utils :only (as-str)]
+        [clojure.contrib.str-utils :only (re-gsub)]))
 
 (defn pop-optional-args
   "Pops args from coll as/if they match preds. Used for binding forms
@@ -59,3 +60,14 @@
      (if (and (not *allow-re-defn*) (.hasRoot v#))
        (throw (RuntimeException. (str "The name " '~name " is already bound in " *ns*)))
        (defn ~name ~@forms))))
+
+(defn denamespace
+  "Remove the namespace portion of a name string."
+  [s]
+  (re-gsub #".*/" "" s))
+
+(defn dasherize
+  "Convert whitespace to dashes."
+  [s]
+  (re-gsub #"\s+" "-" s))
+

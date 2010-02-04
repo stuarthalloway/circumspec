@@ -13,7 +13,8 @@
             (intern *ns* sym)))))))
 
 (migrate
- {'circumspec.context '[describe it testing describe-function]
+ {'circumspec.context '[describe]
+  'circumspec.test '[testing it describe-function]
   'circumspec.for '[for-these]
   'circumspec.should '[should]})
 

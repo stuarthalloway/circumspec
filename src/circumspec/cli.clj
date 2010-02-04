@@ -24,8 +24,7 @@
    :default 0))
 
 (defn run-tests
-  "Runs all tests. Assumes tests are in test directory an have namespaces
-   ending in -test."
+  "Runs all tests for current configuration."
   []
   (let [report (report-function)
         results (namespace-result-seq
