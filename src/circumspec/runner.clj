@@ -1,8 +1,8 @@
 (ns circumspec.runner
   (:use circumspec.test
         [circumspec.test :only (test-description)]
-        [clojure.contrib.error-kit :only (with-handler handle continue-with)]
-        [clojure.contrib.find-namespaces :only (find-namespaces-in-dir)]))
+        [circumspec.locator :only (tests)]
+        [clojure.contrib.error-kit :only (with-handler handle continue-with)]))
 
 ;; TODO: rename to -result, with test-description as result-template
 (defn success-result
@@ -55,20 +55,11 @@
        (catch Throwable t
          (error-result (base-result *current-test* *story*) t))))))
 
-(defn test-result-seq
-  [test-vars]
-  (map run-test test-vars))
+(defn test-results
+  [tests]
+  (map run-test tests))
 
-(defn namespace-result-seq
-  [namespaces]
-  (test-result-seq (tests namespaces)))
 
-(defn test-namespaces
-  "Find test namespaces in basedir matching regexp"
-  [basedir regexp]
-  (->> (find-namespaces-in-dir (java.io.File. basedir))
-      (map str)
-      (filter (partial re-find regexp))
-      (map symbol)))
+
 
 

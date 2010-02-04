@@ -7,5 +7,5 @@
   (with-re-defn
     (doseq [n namespaces]
       (require :reload-all n)))
-  ((report-function) (namespace-result-seq namespaces)))
+  ((report-function) (test-results (tests namespaces))))
 

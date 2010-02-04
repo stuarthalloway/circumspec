@@ -71,13 +71,3 @@
   {:context (:circumspec/context (meta var))
    :name (:circumspec/name (meta var))})
 
-(defn ns-vars
-  [ns]
-  (map second (ns-publics ns)))
-
-(defn tests
-  [namespaces]
-  (doseq [ns namespaces]
-    (require ns))
-  (flatten
-   (map #(filter test? (ns-vars %)) namespaces)))

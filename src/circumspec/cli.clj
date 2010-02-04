@@ -2,7 +2,8 @@
   (:require [circumspec.report dot nested])
   (:use [circumspec.config])
   (:require [circumspec.raw :as raw])
-  (:use [circumspec.runner :only (namespace-result-seq test-namespaces)]))
+  (:use [circumspec.runner :only (test-results)]
+        [circumspec.locator :only (tests)]))
 
 (defn tally
   [result-seq]
@@ -27,8 +28,7 @@
   "Runs all tests for current configuration."
   []
   (let [report (report-function)
-        results (namespace-result-seq
-                 (test-namespaces (test-dir) (test-regex)))
+        results (test-results (tests))
         tally (tally results)]
     (report results)
     (report-tally tally)
