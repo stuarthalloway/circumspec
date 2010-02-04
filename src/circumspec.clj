@@ -16,5 +16,8 @@
  {'circumspec.context '[describe]
   'circumspec.test '[testing it describe-function]
   'circumspec.for '[for-these]
-  'circumspec.should '[should]})
+  'circumspec.should '[should]
+  'circumspec.locator '[test-namespaces tests]
+  'circumspec.runner '[run-tests]
+  'circumspec.watch '[re-test go stop]})
 

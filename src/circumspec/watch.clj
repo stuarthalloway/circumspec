@@ -1,8 +1,10 @@
 (ns circumspec.watch
   (:require [circumspec.config :as config])
-  (:use clojure.contrib.find-namespaces)
-  (:use [circumspec.repl :only (re-test)])
-  (:use [clojure.contrib.java-utils :only (as-file)]))
+  (:use clojure.contrib.find-namespaces
+        [circumspec.utils :only (with-re-defn)]
+        [circumspec.runner :only (run-tests)]
+        [circumspec.locator :only (tests test-namespaces)]
+        [clojure.contrib.java-utils :only (as-file)]))
   
 (def last-watch (agent :disabled))
 
@@ -46,35 +48,43 @@
   []
   (find-recent-namespaces-in-dir (config/test-dir)))
 
+(defn re-test
+  "Reload the namespaces and run the tests again. Uses
+   :reload flag, not :reload-all to avoid odd loops. If
+   that doesn't work for you, explicitly reload things."
+  ([] (re-test (test-namespaces)))
+  ([namespaces]
+     (with-re-defn
+       (doseq [n namespaces]
+         (require :reload n)))
+     (run-tests (tests namespaces))))
+
 (defn namespaces-to-test
   []
   (set (concat (test-namespaces-for-changed-source-namespaces)
                (changed-test-namespaces))))
 
-(defn test-changed-namespaces!
-  []
-  (apply re-test (namespaces-to-test)))
-
 (defn agent-watch-fn
   [state]
   (if (number? state)
     (do
-      (Thread/sleep 2000)
+      (Thread/sleep 500)
       (let [tests-begun (System/currentTimeMillis)]
         (try
-         (test-changed-namespaces!)
+         (re-test (namespaces-to-test))
          (catch Exception e (.printStackTrace e)))
         (send-off *agent* agent-watch-fn)
         tests-begun))
     state))
 
-(defn go!
+(defn go
   []
   (send-off last-watch (constantly 0))
   (send-off last-watch agent-watch-fn))
 
-(defn stop!
+(defn stop
   []
   (send-off last-watch (constantly :disabled)))
+
 
 

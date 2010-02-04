@@ -1,4 +1,6 @@
 (ns circumspec.runner
+  (:require [circumspec.config :as config]
+            [circumspec.raw :as raw])
   (:use circumspec.test
         [circumspec.test :only (test-description)]
         [circumspec.locator :only (tests)]
@@ -58,6 +60,46 @@
 (defn test-results
   [tests]
   (map run-test tests))
+
+(defn tally
+  [result-seq]
+  (reduce
+   #(apply merge-with + %&)
+   (map #(select-keys % [:success :failure :error :pending]) result-seq)))
+
+(defn report-tally
+  [tally]
+  (println
+   (apply format "%d success, %d failure, %d error, %d pending"
+          (map #(get tally % 0) [:success :failure :error :pending]))))
+
+(defn exit-code
+  [tally]
+  (cond
+   (:error tally) 2
+   (:failure tally) 1
+   :default 0))
+
+(defn run-tests
+  "Runs all tests for current configuration, or as
+   passed in via tests."
+  ([] (run-tests (tests)))
+  ([tests]
+     (let [report (config/report-function)
+           results (test-results tests)
+           tally (tally results)]
+       (report results)
+       (raw/dump-results results)
+       tally)))
+
+(defn run-tests-and-exit
+  "Run tests and exit the process"
+  [& args]
+  (let [tally (apply run-tests args)]
+    (report-tally tally)
+    (shutdown-agents)
+    (System/exit (exit-code tally))))
+
 
 
 

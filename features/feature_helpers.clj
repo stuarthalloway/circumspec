@@ -11,7 +11,7 @@
   ["-cp" (str-join ":" (classpath))])
 
 (def clojure-cmd
-  ["clojure.main" "-e" "(use 'circumspec.cli) (run-tests)"])
+  ["clojure.main" "-e" "(use 'circumspec.runner) (run-tests-and-exit)"])
 
 (defn run-circumspec-args
   [props]
