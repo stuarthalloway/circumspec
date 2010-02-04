@@ -20,9 +20,10 @@
                                          :circumspec.colorize "false"})]
       (should
        (re-find
-        #"^a single error
-  nested to demonstrate report indentation ERROR
-    circumspec exception:
-    thrown java.lang.RuntimeException: boom
-    \tat error_"
+        #"^error-example
+  a single error
+    nested to demonstrate report indentation ERROR
+      circumspec exception:
+      thrown java.lang.RuntimeException: boom
+      \tat error_"
         (:out results))))))
