@@ -14,8 +14,5 @@
                   :circumspec/name "foo"
                   :circumspec/context  '(concat [(.name *ns*)] circumspec.context/*context*)
                   :circumspec/pending true}
-                 (c/test-function-metadata "foo" '())))))
+                 (c/test-function-metadata "foo" '()))))))
 
-  (describe-function +
-    (1 2 => 3)
-    (4 5 => 9)))
