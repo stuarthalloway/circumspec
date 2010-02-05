@@ -3,27 +3,6 @@
 
 (def *size* 100)
 
-(defmacro defgenerator
-  "Like def, but may eventually add metadata to identify generators."
-  [sym & forms]
-  `(def ~sym ~@forms))
-
-(defn data-name-for-generator-coll
-  "A collection-based generator foo exposes its collection through
-   the name foo*."
-  [generator-sym]
-  (symbol (str generator-sym "*")))
-
-(defmacro generator-coll
-  "Create var sym* pointing to the collection, and var
-   sym pointing to a fn that returns a random element
-   from the collection."
-  [sym coll]
-  (let [data-name (data-name-for-generator-coll sym)]
-    `(do
-       (def ~data-name ~coll)
-       (defn ~sym [] (rand-elt ~data-name)))))
-
 (defn choose-from
   "Return a function that chooses from one of the generators at
    random."
@@ -49,17 +28,48 @@
   (let [gen (apply string-of generators)]
     (fn [] (symbol (gen)))))
 
-(generator-coll famous-string [nil ""])
-(generator-coll famous-whitespace " \t\n")
-(generator-coll digits "1234567890")
-(generator-coll ascii-upper "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-(generator-coll ascii-lower "abcdefghijklmnopqrstuvwxyz")
-(defgenerator ascii-alpha (choose-from ascii-upper ascii-lower))
+(defmacro generator
+  "Like def, but may eventually add metadata to identify generators."
+  [sym & forms]
+  `(def ~sym ~@forms))
+
+(defn data-name-for-generator-coll
+  "A collection-based generator foo exposes its collection through
+   the name foo*."
+  [generator-sym]
+  (symbol (str generator-sym "*")))
+
+(defmacro collection-generator
+  "Create var sym* pointing to the collection, and var
+   sym pointing to a fn that returns a random element
+   from the collection."
+  [sym coll]
+  (let [data-name (data-name-for-generator-coll sym)]
+    `(do
+       (def ~data-name ~coll)
+       (defn ~sym [] (rand-elt ~data-name)))))
+
+(defmacro char-generator
+  [sym form]
+  `(do
+     (generator ~sym ~form)
+     (generator ~(symbol (str sym "-string")) (string-of ~sym))))
+
+(collection-generator famous-string [nil ""])
+(collection-generator famous-whitespace " \t\n")
+(collection-generator digit "1234567890")
+(collection-generator uppercase-ascii "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+(collection-generator lowercase-ascii "abcdefghijklmnopqrstuvwxyz")
+(generator alpha-ascii (choose-from uppercase-ascii lowercase-ascii))
+
+(char-generator printable-ascii (fn [] (char (+ 32 (rand-int 96)))))
+(char-generator unicode (fn [] (char (rand-int 65536))))
 
 (defn class-symbol
   "Randomly selects one of the classes in the given namespace."
-  [in-namespace]
-  (rand-elt (keys (ns-imports in-namespace))))
+  ([] (class-symbol *ns*))
+  ([in-namespace]
+    (rand-elt (keys (ns-imports in-namespace)))))
 
 (def *generated-values* nil)
 
