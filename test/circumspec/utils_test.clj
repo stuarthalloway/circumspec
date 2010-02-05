@@ -7,11 +7,15 @@
     (for-all [s (whitespacey-string)]
              (should (not (re-find #" |\t|\n" (dasherize s)))))))
 
-(testing "class-symbol always returns a boolean"
-  (let [ascii-symbol (symbol-of ascii-alpha)]
-    (for-all [s (ascii-symbol)]
-             (when-not (= s (symbol "")) ;; clojure bug? empty symbol barfs
-               (should (contains? #{true false} (class-symbol? s)))))))
+(describe "class-symbol?"
+  (testing "always returns a boolean"
+    (let [ascii-symbol (symbol-of ascii-alpha)]
+      (for-all [s (ascii-symbol)]
+               (when-not (= s (symbol "")) ;; clojure bug? empty symbol barfs
+                 (should (contains? #{true false} (class-symbol? s)))))))
+  (testing "returns true for names imported in our namespace"
+    (for-all [s (class-symbol *ns*)]
+             (should (true? (class-symbol? s)) (str "testing symbol: " s)))))
 
 (testing pop-optional-args
   (for-these [output input] (should (= output (apply pop-optional-args input)))

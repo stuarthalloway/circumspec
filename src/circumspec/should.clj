@@ -7,6 +7,12 @@
 (defvar *debug* nil
   "Set to true to make should failures bounce into debug repl.")
 
+(defmacro local-bindings
+  "Produces a map of the names of local bindings to their values."
+  []
+  (let [symbols (map key @clojure.lang.Compiler/LOCAL_ENV)]
+    (zipmap (map (fn [sym] `(quote ~sym)) symbols) symbols)))
+
 ;; TODO: refactor, default-message
 (defn default-fail-message
   "Default string message for a ahould failure/warning."
@@ -40,29 +46,35 @@
   (when *debug* (should-repl options))
   (throw (new circumspec.AssertFailed (:msg options) options)))
 
+(defn message-map
+  [message]
+  (if message
+    {:message message}
+    {}))
+
 ;; TODO: intelligence for false/false case
 ;; TODO: chain out on first 
 (defmulti should-body
-  (fn [form options]
+  (fn [form message]
     (when (seq? form)
       (cond
        (= 'throws? (first form)) :throws
        (function? (first form)) :predicate))))
 
 (defmethod should-body :default
-  [form options]
+  [form message]
   `(let [value# ~form]
      (if value#
        true
-       (fail (merge ~options {:expected '~form :actual value#})))))
+       (fail (merge (message-map ~message) {:expected '~form :actual value#})))))
 
 (defmethod should-body :predicate
-  [[pred & args :as form] options]
+  [[pred & args :as form] message]
   `(let [values# (list ~@args)
          result# (apply ~pred values#)]
      (if result#
        true
-       (fail (merge ~options {:expected '~form :actual (list '~'not (cons '~pred values#))})))))
+       (fail (merge (message-map ~message) {:expected '~form :actual (list '~'not (cons '~pred values#))})))))
 
 ;; TODO: make private, and make describe automatically expose private vars
 (defn match-fn
@@ -75,16 +87,16 @@
       (instance? java.util.regex.Pattern x)))
 
 (defn should-exception-matches
-  [options expected-message throwable]
+  [expected-message throwable message]
   (if expected-message
     (let [actual (.getMessage throwable)]
       (if ((match-fn expected-message) expected-message actual)
         true
-        (fail (merge options {:expected expected-message :actual actual}))))
+        (fail (merge (message-map ~message) {:expected expected-message :actual actual}))))
     true))
 
 (defmethod should-body :throws
-  [throws-args options]
+  [throws-args message]
   (let [[_ expected-type expected-message body] (pop-optional-args [symbol? class-symbol? string-or-regex?] throws-args)]
     `(let [failed?# (Object.)]
        (if (= failed?# (try
@@ -92,14 +104,8 @@
                           ~@body
                           failed?#)
                         (catch ~expected-type expected-instance#
-                          (should-exception-matches ~options ~expected-message expected-instance#))))
-         (fail (merge ~options {:expected ~expected-type :actual nil}))        ))))
-
-(defn as-should-options
-  "Coerce should options from caller convenience to form used
-   in implementation."
-  [str-or-map]
-  (if (string? str-or-map) {:message str-or-map} str-or-map))
+                          (should-exception-matches ~expected-message expected-instance# ~message))))
+         (fail (merge (message-map ~message) {:expected ~expected-type :actual nil}))))))
 
 (defmacro should
   "Evaluate expression and throw an exception if it is not logical
@@ -108,8 +114,8 @@
    want to pass to the handler."
   ([form]
      `(should ~form nil))
-  ([form options]
-     `~(should-body form (as-should-options options))))
+  ([form message]
+     `~(should-body form message)))
 
 
 
