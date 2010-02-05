@@ -39,23 +39,29 @@
          result# (do ~@body)]
      (assoc result# :nsec (- (System/nanoTime) start#))))
 
-(def *current-test* nil)
-(def *story* nil)
+(def *story* [])
 
-(defn run-test
+(defmulti run-test
+  (fn [& [arg]] (cond (var? arg) :var (fn? arg) :fn)))
+
+(defmethod run-test :fn
+  ([f] (run-test f {:name "anonymous test"}))
+  ([f desc]
+     (try
+      (with-timing
+        (f)
+        (success-result (base-result desc *story*)))
+      (catch circumspec.AssertFailed afe
+        (fail-result (base-result desc *story*) afe))
+      (catch Throwable t
+        (error-result (base-result desc *story*) t)))))
+
+(defmethod run-test :var
   [var]
-  (binding [*current-test* (test-description var)
-            *story* []]
+  (let [desc (test-description var)]
     (if (pending? var)
-      (pending-result *current-test*)
-      (try
-       (with-timing
-         (@var)
-         (success-result (base-result *current-test* *story*)))
-       (catch circumspec.AssertFailed afe
-         (fail-result (base-result *current-test* *story*) afe))
-       (catch Throwable t
-         (error-result (base-result *current-test* *story*) t))))))
+      (pending-result desc)
+      (run-test @var desc))))
 
 (defn test-results
   [tests]

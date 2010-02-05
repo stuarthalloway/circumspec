@@ -8,7 +8,7 @@
                                        :circumspec.test-dir "features"
                                        :circumspec.colorize "false"})]
     (should
-      (= (:out results)  "P\n0 success, 0 failure, 0 error, 1 pending\n"))
+      (re-find #"P\n0 success, 0 failure, 0 error, 1 pending \[\d+ msec\]\n" (:out results)))
     (should
       (= (:exit results) 0))
     (should
