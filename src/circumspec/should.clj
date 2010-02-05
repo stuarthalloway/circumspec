@@ -8,24 +8,23 @@
   "Set to true to make should failures bounce into debug repl.")
 
 (defmacro local-bindings
-  "Produces a map of the names of local bindings to their values."
+  "Produces a map of the names of local bindings to their values.
+   For now, strip out gensymed locals. TODO: use 1.2 feature."
   []
-  (let [symbols (map key @clojure.lang.Compiler/LOCAL_ENV)]
+  (let [symbols (remove #(.contains (str %) "_") (map key @clojure.lang.Compiler/LOCAL_ENV))]
     (zipmap (map (fn [sym] `(quote ~sym)) symbols) symbols)))
 
 ;; TODO: refactor, default-message
 (defn default-fail-message
   "Default string message for a ahould failure/warning."
-  [{expected :expected
-    actual :actual
-    message :message
-    :as options}]
+  [{:keys [expected actual message locals]}]
   (let [message-prefix (if message (str message "\n") nil)]
     (str
      "circumspec should-assertion failed:\n"
      message-prefix
      "expected " (pps expected)
-     "actual " (pps actual))))
+     "actual " (pps actual)
+     "locals " (pps locals))))
 
 (defn default-error-message
   [{throwable :throwable
@@ -41,10 +40,11 @@
   (println "Starting debug repl. Type () to end repl and propagate failure.")
   (debug-repl))
 
-(defn fail
+(defmacro fail
   [options]
-  (when *debug* (should-repl options))
-  (throw (new circumspec.AssertFailed (:msg options) options)))
+  `(let [options# (assoc ~options :locals (local-bindings))]
+     (when *debug* (should-repl options#))
+     (throw (new circumspec.AssertFailed (:msg options#) options#))))
 
 (defn message-map
   [message]

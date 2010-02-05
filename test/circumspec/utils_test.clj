@@ -15,7 +15,7 @@
                  (should (contains? #{true false} (class-symbol? s)))))))
   (testing "returns true for names imported in our namespace"
     (for-all [s (class-symbol *ns*)]
-             (should (true? (class-symbol? s)) (str "testing symbol: " s)))))
+             (should (true? (class-symbol? s))))))
 
 (testing pop-optional-args
   (for-these [output input] (should (= output (apply pop-optional-args input)))
