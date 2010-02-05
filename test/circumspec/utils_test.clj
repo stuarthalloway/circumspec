@@ -1,6 +1,17 @@
 (ns circumspec.utils-test
-  (:use circumspec circumspec.utils
+  (:use circumspec circumspec.utils circumspec.for-all
         clojure.contrib.with-ns))
+
+(testing dasherize
+  (let [whitespacey-string (string-of ascii-alpha famous-whitespace)]
+    (for-all [s (whitespacey-string)]
+             (should (not (re-find #" |\t|\n" (dasherize s)))))))
+
+(testing "class-symbol always returns a boolean"
+  (let [ascii-symbol (symbol-of ascii-alpha)]
+    (for-all [s (ascii-symbol)]
+             (when-not (= s (symbol "")) ;; clojure bug? empty symbol barfs
+               (should (contains? #{true false} (class-symbol? s)))))))
 
 (testing pop-optional-args
   (for-these [output input] (should (= output (apply pop-optional-args input)))
