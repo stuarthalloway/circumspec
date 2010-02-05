@@ -1,8 +1,9 @@
 (ns circumspec.locator
-  (:use [clojure.contrib.seq-utils :only (flatten)]
+  (:use [clojure.contrib.seq-utils :only (flatten group-by)]
         [clojure.contrib.find-namespaces :only (find-namespaces-in-dir)]
         [circumspec.test :only (test?)])
-  (:require [circumspec.config :as config]))
+  (:require [circumspec.config :as config]
+            [clojure.contrib.str-utils2 :as string]))
 
 (defn ns-vars
   [ns]
@@ -18,11 +19,19 @@
           (filter (partial re-find regexp))
           (map symbol))))
 
+(defn sort-key
+  [var]
+  (string/join (char 65535) (:circumspec/context (meta var))))
+
+(defn tests-in-namespace
+  [ns]
+  (sort-by sort-key (filter test? (ns-vars ns))))
+
 (defn tests
   ([] (tests (test-namespaces)))
   ([namespaces]
      (doseq [ns namespaces]
        (require ns))
      (flatten
-      (map #(filter test? (ns-vars %)) namespaces))))
+      (map tests-in-namespace namespaces))))
 
