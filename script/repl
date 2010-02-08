@@ -5,4 +5,4 @@ for f in lib/*.jar; do
     CLASSPATH=$CLASSPATH:$f
 done
 
-rlwrap java -cp $CLASSPATH clojure.main -i script/repl.clj -r
+rlwrap java -cp $CLASSPATH clojure.main -i script/repl.clj -e "(use '[clojure.contrib.duck-streams :only (spit read-lines reader writer)] '[clojure.contrib def ns-utils pprint repl-utils shell-out]) (require '[clojure.contrib.str-utils2 :as s])$REPL_SWANK" -r
