@@ -25,12 +25,12 @@
              [1 2 []] [[odd? even?] [1 2]]
              ['throws? IllegalArgumentException [0]] [[symbol? class?] ['throws? IllegalArgumentException 0]]))
 
-(describe-function class-symbol?
+(testing-fn class-symbol?
   ('dribble.dribble.Shoot => false)
   ('String => true)
   ('java.lang.String => true))
 
-(describe-function java-props->sh-args
+(testing-fn java-props->sh-args
   ({:foo "bar"} => ["-Dfoo=bar"])
   ({"baz" "quux"} => ["-Dbaz=quux"])
   ({:one "1" :two "2"} => ["-Done=1" "-Dtwo=2"]))

@@ -5,6 +5,7 @@
         [circumspec.utils :only (with-re-defn)]
         [circumspec.runner :only (run-tests)]
         [circumspec.locator :only (tests test-namespaces)]
+        [circumspec.report :only (pending-string)]
         [clojure.contrib.def :only (defvar)]
         [clojure.contrib.str-utils :only (re-sub)]
         [clojure.contrib.java-utils :only (as-file)]))
@@ -83,7 +84,11 @@
   ([namespaces]
      (with-re-defn
        (doseq [n namespaces]
-         (require :reload (test-ns->source-ns n))
+         (try
+          (require :reload (test-ns->source-ns n))
+          (catch
+              java.io.FileNotFoundException fnfe
+            (println (pending-string (.getMessage fnfe)))))
          (require :reload n)))
      (run-tests (tests namespaces))
      nil))

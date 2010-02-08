@@ -6,10 +6,12 @@
     (should (throws? Exception)))
 
   (testing "not equal should fail"
-    (should (= (+ 1 41) 43)))
+    (should
+     (= (+ 1 41) 43)))
 
   (testing "error not thrown should fail"
-    (should (throws? ArithmeticException (+ 1 2))))
+    (should
+     (throws? ArithmeticException (+ 1 2))))
 
   (testing "wrong error message should fail"
     (let [x 0]

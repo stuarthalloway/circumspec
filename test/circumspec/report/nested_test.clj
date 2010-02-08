@@ -2,24 +2,24 @@
   (:use circumspec circumspec.report.nested)
   (:use [circumspec.config :only (colorize)]))
 
-(describe-function indent
+(testing-fn indent
   (0 "foo" => "foo")
   (1 "bar" => "  bar")
   (2 "baz" => "    baz"))
 
-(describe-function indent-lines
+(testing-fn indent-lines
   (0 nil => nil)
   (0 "foo\nbar" => "foo\nbar")
   (1 "foo\nbar" => "  foo\n  bar"))
 
-(describe-function context-lines
+(testing-fn context-lines
   (nil nil => [])
   ({} {} => [])
   ({} {:context ["level 1"]} => ["level 1"])
   ({:context ["level 1"]} {:context ["level 1"]} => [])
   ({:context ["1"]} {:context ["1" "2"]} => ["  2"]))
 
-(describe-function story-lines
+(testing-fn story-lines
   (nil => [])
   ({:context ["level 1"]} => [])
   ({:context [], :story ["given this" "then that"]}

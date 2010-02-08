@@ -5,5 +5,5 @@
 (describe "Circumspec Greeter"
   (it "should say hello"
     (should (= "Hello Circumspec!" (greet))))
-  (describe-function greet
+  (testing-fn greet
     (=> "Hello Circumspec!")))

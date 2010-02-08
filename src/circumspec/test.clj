@@ -28,10 +28,10 @@
          (= (apply ~fn ~(apply vector (take (- c 2) form)))
             ~(last form)))))
 
-(defmacro describe-function
+(defmacro testing-fn
   [fn-name & forms]
   `(defn! ~(with-meta (test-function-name fn-name) (test-function-metadata (resolve fn-name) forms))
-     "Generated test from the describe-function macro."
+     "Generated test from the testing-fn macro."
      []
      ~@(map #(rewrite-=> fn-name %) forms)))
 

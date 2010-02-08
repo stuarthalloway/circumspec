@@ -16,14 +16,14 @@
   (should (= (t/rewrite-=> '+ '[1 2 => 3])
              '(circumspec.should/should (clojure.core/= (clojure.core/apply + [1 2]) 3)))))
 
-(testing "describe-function"
+(testing "testing-fn"
   (should (= '(circumspec.utils/defn! add-test
-                "Generated test from the describe-function macro."
+                "Generated test from the testing-fn macro."
                 []
                   (circumspec.should/should (clojure.core/= (clojure.core/apply add [1 2]) 3))
                   (circumspec.should/should (clojure.core/= (clojure.core/apply add [4 5]) 9)))
              (macroexpand-1
-              '(circumspec.test/describe-function add (1 2 => 3) (4 5 => 9))))))
+              '(circumspec.test/testing-fn add (1 2 => 3) (4 5 => 9))))))
 
 (testing "test-function-name"
     (should (= 'foo-test (t/test-function-name 'foo)) "symbol that does not resolve")

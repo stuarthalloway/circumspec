@@ -14,7 +14,7 @@
 
 (migrate
  {'circumspec.context '[describe]
-  'circumspec.test '[testing it describe-function]
+  'circumspec.test '[testing it testing-fn]
   'circumspec.for '[for-these]
   'circumspec.should '[should]
   'circumspec.locator '[test-namespaces tests]

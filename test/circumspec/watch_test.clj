@@ -2,13 +2,13 @@
   (:use circumspec)
   (:require [circumspec.watch :as w]))
 
-(describe-function w/source-ns->test-ns
+(testing-fn w/source-ns->test-ns
   ('foobar => 'foobar-test))
 
-(describe-function w/test-ns->source-ns
+(testing-fn w/test-ns->source-ns
   ('foobar-test => 'foobar))
 
-(describe-function w/test-namespace
+(testing-fn w/test-namespace
   ("src/circumspec/runner.clj" => 'circumspec.runner-test)
   ("test/circumspec/runner_test.clj" => 'circumspec.runner-test))
 
