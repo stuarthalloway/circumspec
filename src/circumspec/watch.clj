@@ -2,7 +2,7 @@
   (:import java.util.Date)
   (:require [circumspec.config :as config])
   (:use clojure.contrib.find-namespaces
-        [circumspec.utils :only (with-re-defn)]
+        [circumspec.utils :only (ns-wipe)]
         [circumspec.runner :only (run-tests)]
         [circumspec.locator :only (tests test-namespaces)]
         [circumspec.report :only (pending-string)]
@@ -82,14 +82,14 @@
    that doesn't work for you, explicitly reload things."
   ([] (re-test (test-namespaces)))
   ([namespaces]
-     (with-re-defn
-       (doseq [n namespaces]
-         (try
-          (require :reload (test-ns->source-ns n))
-          (catch
-              java.io.FileNotFoundException fnfe
-            (println (pending-string (.getMessage fnfe)))))
-         (require :reload n)))
+     (doseq [n namespaces]
+       (try
+        (require :reload (test-ns->source-ns n))
+        (catch
+            java.io.FileNotFoundException fnfe
+          (println (pending-string (.getMessage fnfe)))))
+       (ns-wipe n)
+       (require :reload n))
      (run-tests (tests namespaces))
      nil))
 

@@ -26,6 +26,13 @@
   [form]
   `(pprint (macroexpand-1 '~form)))
 
+(defn ns-wipe
+  "Unbind all symbols in a namespace"
+  [ns]
+  (when (find-ns ns)
+    (doseq [sym (map first (ns-publics ns))]
+      (ns-unmap ns sym))))
+
 (defn pps
   "Pretty print into a string"
   [x]
