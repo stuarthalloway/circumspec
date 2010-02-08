@@ -1,11 +1,9 @@
 (ns circumspec.should
-  (use [clojure.contrib.def :only (defvar)]
-       [clojure.test :only (function? *testing-contexts* report)]
-       [clojure.contrib.debug :only (debug-repl)]
-       [circumspec.utils :only (pop-optional-args class-symbol? pps)]))
-
-(defvar *debug* nil
-  "Set to true to make should failures bounce into debug repl.")
+  (:use [clojure.contrib.def :only (defvar)]
+        [clojure.test :only (function? *testing-contexts* report)]
+        [clojure.contrib.debug :only (debug-repl)]
+        [circumspec.utils :only (pop-optional-args class-symbol? pps)])
+  (:require [circumspec.config :as config]))
 
 (defmacro local-bindings
   "Produces a map of the names of local bindings to their values.
@@ -35,6 +33,7 @@
      message-prefix
      "thrown " (with-out-str (.printStackTrace throwable (java.io.PrintWriter. *out*))))))
 
+; TODO: make macro?
 (defn should-repl [options]
   (println (default-fail-message options))
   (println "Starting debug repl. Type () to end repl and propagate failure.")
@@ -43,7 +42,7 @@
 (defmacro fail
   [options]
   `(let [options# (assoc ~options :locals (local-bindings))]
-     (when *debug* (should-repl options#))
+     (when (config/debug) (should-repl options#))
      (throw (new circumspec.AssertFailed (:msg options#) options#))))
 
 (defn message-map

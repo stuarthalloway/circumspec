@@ -1,9 +1,9 @@
 (ns circumspec.runner
   (:require [circumspec.config :as config]
-            [circumspec.raw :as raw])
+            [circumspec.raw :as raw]
+            [circumspec.locator :as locator])
   (:use circumspec.test
         [circumspec.test :only (test-description)]
-        [circumspec.locator :only (tests)]
         [clojure.contrib.error-kit :only (with-handler handle continue-with)]))
 
 ;; TODO: rename to -result, with test-description as result-template
@@ -90,16 +90,16 @@
 (defn run-tests
   "Runs all tests for current configuration, or as
    passed in via tests."
-  ([] (run-tests (tests)))
-  ([tests]
-     (let [start (System/nanoTime)
-           results (test-results tests)
-           tally (assoc (tally results) :nsec (- (System/nanoTime) start))
-           report (config/report-function)]
-       (report results)
-       (raw/dump-results results)
-       (report-tally tally)
-       tally)))
+  [& tests]
+  (let [tests (or (seq tests) (locator/tests))
+        start (System/nanoTime)
+        results (test-results tests)
+        tally (assoc (tally results) :nsec (- (System/nanoTime) start))
+        report (config/report-function)]
+    (report results)
+    (raw/dump-results results)
+    (report-tally tally)
+    tally))
 
 (defn run-tests-and-exit
   "Run tests and exit the process"

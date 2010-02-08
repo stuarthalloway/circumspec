@@ -90,7 +90,7 @@
           (println (pending-string (.getMessage fnfe)))))
        (ns-wipe n)
        (require :reload n))
-     (run-tests (tests namespaces))
+     (apply run-tests (tests namespaces))
      nil))
 
 (defn namespaces-to-test
@@ -128,12 +128,16 @@
   enabled)
 
 (defn watch
+  "Run all tests, then watch directories for file changes. When
+   something changes, run tests again. Call again if you want
+   the whole suite."
   []
   (reset! last-watched-atom {})
   (send-off watch-agent (constantly true))
   (send-off watch-agent agent-watch-fn))
 
 (defn stop
+  "Stop watching.n"
   []
   (send-off watch-agent (constantly false)))
 

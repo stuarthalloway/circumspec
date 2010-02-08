@@ -19,6 +19,12 @@
         (~constructor
          (System/getProperty ~(str "circumspec." name) ~default-value)))))
 
+;; this is currently broken
+(defconfig debug
+  "Should the debug repl launch at the point of a test failure?"
+  "false"
+  (partial contains? #{"yes" "true"}))
+
 (defconfig colorize
   "Should console output be colorized."
   "true"
