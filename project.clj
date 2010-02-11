@@ -1,4 +1,4 @@
-(defproject circumspec "0.0.5"
+(defproject circumspec "0.0.6"
   :dependencies [[org.clojure/clojure
                   "1.1.0"]
                  [org.clojure/clojure-contrib

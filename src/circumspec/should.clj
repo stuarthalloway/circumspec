@@ -51,8 +51,9 @@
     {:message message}
     {}))
 
+;; TODO: capture locals in all variants
 ;; TODO: intelligence for false/false case
-;; TODO: chain out on first 
+;; TODO: chain out on first
 (defmulti should-body
   (fn [form message]
     (when (seq? form)
