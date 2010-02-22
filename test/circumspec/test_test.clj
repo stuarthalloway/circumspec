@@ -1,8 +1,13 @@
 (ns circumspec.test-test
-  (:use circumspec)
+  (:use circumspec circumspec.for-all)
   (:require [circumspec.test :as t]))
 
-(testing "=>-assertion?"
+(it t/make-test-name
+  (let [whitespacey-string (string-of alpha-ascii famous-whitespace (constantly \/))]
+    (for-all [s (whitespacey-string)]
+             (should (not (re-find #" |\t|\n|/|\." (t/make-test-name s)))))))
+
+(it "=>-assertion?"
   (should (false? (t/=>-assertion? nil)))
   (should (false? (t/=>-assertion? [])))
   (should (false? (t/=>-assertion? '[a])))
@@ -12,11 +17,11 @@
   (should (true? (t/=>-assertion? '[a => b])))
   (should (true? (t/=>-assertion? '[a b => c]))))
 
-(testing "rewrite-=>"
+(it "rewrite-=>"
   (should (= (t/rewrite-=> '+ '[1 2 => 3])
              '(circumspec.should/should (clojure.core/= (clojure.core/apply + [1 2]) 3)))))
 
-(testing "testing-fn"
+(it "testing-fn"
   (should (= '(circumspec.utils/defn! add-test
                 "Generated test from the testing-fn macro."
                 []

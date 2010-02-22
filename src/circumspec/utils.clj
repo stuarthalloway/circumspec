@@ -73,8 +73,4 @@
   [s]
   (re-gsub #".*/" "" s))
 
-(defn dasherize
-  "Convert whitespace to dashes."
-  [s]
-  (re-gsub #"\s+" "-" s))
 

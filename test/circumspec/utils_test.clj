@@ -2,11 +2,6 @@
   (:use circumspec circumspec.utils circumspec.for-all
         clojure.contrib.with-ns))
 
-(testing dasherize
-  (let [whitespacey-string (string-of alpha-ascii famous-whitespace)]
-    (for-all [s (whitespacey-string)]
-             (should (not (re-find #" |\t|\n" (dasherize s)))))))
-
 (describe "class-symbol?"
   (testing "always returns a boolean"
     (let [ascii-symbol (symbol-of alpha-ascii)]

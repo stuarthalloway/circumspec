@@ -1,9 +1,20 @@
 (ns circumspec.test
   (:use [clojure.contrib.def :only (defalias)]
         [clojure.contrib.seq-utils :only (flatten)]
+        [clojure.contrib.str-utils :only (re-gsub)]
         [circumspec.should :only (should)]
         [circumspec.context :only (test-function-metadata)]
         circumspec.utils))
+
+(defn make-test-name
+  "Make a legal test name: Convert whitespace, /, . to dashes. Append
+   -test if collides with name of the thing itself"
+  [s]
+  (let [basename (re-gsub #"\s+|/|." "-" s)]
+    (if (and (resolve (symbol basename))
+             (not (.endsWith basename "-test")))
+      (str basename "-test")
+      basename)))
 
 ; TODO: does not work with macro names or ns prefixes
 (defn test-function-name
@@ -13,7 +24,7 @@
   [desc]
   (symbol (if (symbol? desc)
             (str  (denamespace (str desc)) "-test")
-            (dasherize (str desc)))))
+            (make-test-name (str desc)))))
 
 (defn =>-assertion?
   [form]
@@ -45,6 +56,8 @@
      ~@forms))
 
 (defalias testing it)
+;; defalias crushes :meta, so
+(alter-meta! #'testing assoc :macro true)
 
 (defn test?
   "Does var refer to a test?"
