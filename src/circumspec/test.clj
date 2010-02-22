@@ -11,7 +11,7 @@
    append suffix to prevent name collision between var and test.
    If desc is a human friendly string, dasherize it."
   [desc]
-  (symbol (if (symbol desc)
+  (symbol (if (symbol? desc)
             (str  (denamespace (str desc)) "-test")
             (dasherize (str desc)))))
 
