@@ -5,7 +5,7 @@
         [circumspec.utils :only (ns-wipe)]
         [circumspec.runner :only (run-tests)]
         [circumspec.locator :only (tests test-namespaces)]
-        [circumspec.report :only (pending-string)]
+        [circumspec.report :only (pending-string error-string)]
         [clojure.contrib.def :only (defvar)]
         [clojure.contrib.str-utils :only (re-sub)]
         [clojure.contrib.java-utils :only (as-file)]))
@@ -76,30 +76,60 @@
   []
   (find-recent-namespaces-in-dir (config/test-dir)))
 
+(defn reload-exception-message
+  [throwable]
+  (error-string
+   (str
+    "exception while loading\n"
+    (with-out-str (.printStackTrace
+                   throwable
+                   (java.io.PrintWriter. *out*))))))
+
+(defn load-source-namespace
+  [n]
+  (try
+   (require :reload (test-ns->source-ns n))
+   (catch java.io.FileNotFoundException fnfe
+     (println (pending-string (.getMessage fnfe))))))
+
+(defn load-test-namespace
+  [n]
+  (ns-wipe n)
+  (require :reload n))
+
+(defn load-source-and-test-namespace
+  [test-ns]
+  (load-source-namespace (test-ns->source-ns test-ns))
+  (load-test-namespace test-ns))
+
 (defn re-test
   "Reload the namespaces and run the tests again. Uses
    :reload flag, not :reload-all to avoid odd loops. If
    that doesn't work for you, explicitly reload things."
-  ([] (re-test (test-namespaces)))
+  ([]
+     (try
+      (re-test (test-namespaces))
+      (catch Throwable e
+        (println (reload-exception-message e)))))
   ([namespaces]
-     (doseq [n namespaces]
-       (try
-        (require :reload (test-ns->source-ns n))
-        (catch
-            java.io.FileNotFoundException fnfe
-          (println (pending-string (.getMessage fnfe)))))
-       (ns-wipe n)
-       (require :reload n))
-     (apply run-tests (tests namespaces))
+     (try
+      (doseq [n namespaces]
+        (load-source-and-test-namespace n))
+      (apply run-tests (tests namespaces))
+      (catch Throwable e
+        (println (reload-exception-message e))))
      nil))
 
 (defn namespaces-to-test
   "Namespaces to test. Note that the watcher cannot watch
    itself."
   []
-  (disj (set (concat (test-namespaces-for-changed-source-namespaces)
-                     (changed-test-namespaces)))
-        'circumspec.watch-test))
+  (try
+   (disj (set (concat (test-namespaces-for-changed-source-namespaces)
+                      (changed-test-namespaces)))
+         'circumspec.watch-test)
+   (catch Throwable e
+     (println (reload-exception-message e)))))
 
 (defn run-watcher
   []

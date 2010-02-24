@@ -10,7 +10,7 @@
   "Make a legal test name: Convert whitespace, /, . to dashes. Append
    -test if collides with name of the thing itself"
   [s]
-  (let [basename (re-gsub #"\s+|/|." "-" s)]
+  (let [basename (re-gsub #"\s+|/|\." "-" s)]
     (if (and (resolve (symbol basename))
              (not (.endsWith basename "-test")))
       (str basename "-test")

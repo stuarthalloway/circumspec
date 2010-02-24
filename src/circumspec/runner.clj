@@ -94,11 +94,12 @@
   (let [tests (or (seq tests) (locator/tests))
         start (System/nanoTime)
         results (test-results tests)
-        tally (assoc (tally results) :nsec (- (System/nanoTime) start))
         report (config/report-function)]
+    ;; report first, tally later so reports print incrementally
     (report results)
     (raw/dump-results results)
-    (report-tally tally)
+    (let [tally (assoc (tally results) :nsec (- (System/nanoTime) start))]
+      (report-tally tally))
     tally))
 
 (defn run-tests-and-exit

@@ -5,7 +5,8 @@
 (it t/make-test-name
   (let [whitespacey-string (string-of alpha-ascii famous-whitespace (constantly \/))]
     (for-all [s (whitespacey-string)]
-             (should (not (re-find #" |\t|\n|/|\." (t/make-test-name s)))))))
+      (when-not (empty? s)
+        (should (not (re-find #" |\t|\n|/|\." (t/make-test-name s))))))))
 
 (it "=>-assertion?"
   (should (false? (t/=>-assertion? nil)))
@@ -35,4 +36,6 @@
     (should (= 'last-test (t/test-function-name 'last)) "symbol that resolves")
     (should (= 'spec-vars-test (t/test-function-name 't/spec-vars)) "namespace-abbrev prefixed symbol")
     (should (= 'last-test (t/test-function-name 'clojure.core/last)) "namespace prefixed symbol"))
+
+
 

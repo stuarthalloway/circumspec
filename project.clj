@@ -1,4 +1,4 @@
-(defproject circumspec "0.0.7"
+(defproject circumspec "0.0.8"
   :dependencies [[org.clojure/clojure
                   "1.2.0-master-SNAPSHOT"]
                  [org.clojure/clojure-contrib
