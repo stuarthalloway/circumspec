@@ -2,7 +2,7 @@
   (:use circumspec circumspec.utils circumspec.for-all
         clojure.contrib.with-ns))
 
-(describe "class-symbol?"
+(describe class-symbol?
   (testing "always returns a boolean"
     (let [ascii-symbol (symbol-of alpha-ascii)]
       (for-all [s (ascii-symbol)]

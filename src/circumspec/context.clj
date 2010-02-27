@@ -14,7 +14,7 @@
 (defn test-function-metadata
   [desc forms]
   (merge {:circumspec/test true
-          :circumspec/name desc
+          :circumspec/name (str desc)
           :circumspec/context '(concat [(.name *ns*)] circumspec.context/*context*)}
          (if (empty? forms)
            {:circumspec/pending true}

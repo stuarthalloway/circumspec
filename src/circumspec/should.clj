@@ -92,7 +92,7 @@
     (let [actual (.getMessage throwable)]
       (if ((match-fn expected-message) expected-message actual)
         true
-        (fail (merge (message-map ~message) {:expected expected-message :actual actual}))))
+        (fail (merge (message-map message) {:expected expected-message :actual actual}))))
     true))
 
 (defmethod should-body :throws

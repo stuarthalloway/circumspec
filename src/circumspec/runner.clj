@@ -73,19 +73,19 @@
    #(apply merge-with + %&)
    (map #(select-keys % [:success :failure :error :pending]) result-seq)))
 
-(defn report-tally
-  [tally]
-  (let [{:keys [success failure error pending nsec]} tally]
-    (println
-     (apply format "%d success, %d failure, %d error, %d pending [%d msec]"
-            (map #(or % 0) [success failure error pending (quot nsec 1000000)])))))
-
 (defn exit-code
   [tally]
   (cond
    (:error tally) 2
    (:failure tally) 1
    :default 0))
+
+(defn report-tally
+  [tally]
+  (let [{:keys [success failure error pending nsec]} tally]
+    (println
+     (apply format "%d success, %d failure, %d error, %d pending [%d msec]"
+            (map #(or % 0) [success failure error pending (quot nsec 1000000)])))))
 
 (defn run-tests
   "Runs all tests for current configuration, or as
@@ -99,13 +99,13 @@
     (report results)
     (raw/dump-results results)
     (let [tally (assoc (tally results) :nsec (- (System/nanoTime) start))]
-      (report-tally tally))
-    tally))
+      (report-tally tally)
+      tally)))
 
 (defn run-tests-and-exit
   "Run tests and exit the process"
   [& args]
-  (let [tally (apply run-tests args)]
+  (let [tally (run-tests)]
     (shutdown-agents)
     (System/exit (exit-code tally))))
 

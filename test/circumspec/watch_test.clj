@@ -12,7 +12,7 @@
   ("src/circumspec/runner.clj" => 'circumspec.runner-test)
   ("test/circumspec/runner_test.clj" => 'circumspec.runner-test))
 
-(testing "mark-watched"
+(testing w/mark-watched
   (binding [w/last-watched-atom (atom {})]
     (w/mark-watched 111 ['circumspec.runner-test])
     (should (= {'circumspec.runner-test 111}

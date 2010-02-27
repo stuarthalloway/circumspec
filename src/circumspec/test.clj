@@ -36,7 +36,7 @@
   [fn form]
   (let [c (count form)]
     `(should
-         (= (apply ~fn ~(apply vector (take (- c 2) form)))
+         (= (~fn ~@(apply vector (take (- c 2) form)))
             ~(last form)))))
 
 (defmacro testing-fn
