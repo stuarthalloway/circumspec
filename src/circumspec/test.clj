@@ -1,6 +1,5 @@
 (ns circumspec.test
   (:use [clojure.contrib.def :only (defalias)]
-        [clojure.contrib.seq-utils :only (flatten)]
         [clojure.contrib.str-utils :only (re-gsub)]
         [circumspec.should :only (should)]
         [circumspec.context :only (test-function-metadata)]

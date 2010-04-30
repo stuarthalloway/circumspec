@@ -1,6 +1,5 @@
 (ns circumspec.locator
-  (:use [clojure.contrib.seq-utils :only (flatten group-by)]
-        [clojure.contrib.find-namespaces :only (find-namespaces-in-dir)]
+  (:use [clojure.contrib.find-namespaces :only (find-namespaces-in-dir)]
         [circumspec.test :only (test?)])
   (:require [circumspec.config :as config]
             [clojure.contrib.str-utils2 :as string]))

@@ -4,6 +4,8 @@ Early days. Don't expect things to work or API to be stable. You've been warned.
 
 ## Usage
 
+Run "lein compile" to compile circumspec.AssertFailed.
+
 Read the features and tests directories. Run the scripts in script. Be brave.
 
 The public API is the functions migrated into the circumspec namespace 

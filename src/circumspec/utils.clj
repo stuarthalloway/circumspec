@@ -1,6 +1,5 @@
 (ns circumspec.utils
   (:use clojure.contrib.pprint
-        [clojure.contrib.seq-utils :only (flatten)]
         [clojure.contrib.java-utils :only (as-str)]
         [clojure.contrib.str-utils :only (re-gsub)]))
 

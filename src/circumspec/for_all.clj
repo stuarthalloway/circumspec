@@ -1,13 +1,12 @@
-(ns circumspec.for-all
-  (:use [clojure.contrib.seq-utils :only (rand-elt)]))
+(ns circumspec.for-all)
 
 (def *size* 100)
 
 (defn choose-from
-  "Return a function that chooses from one of the generators at
+  "Retuern a function that chooses from one of the generators at
    random."
   [& generators]
-  (fn [] ((rand-elt generators))))
+  (fn [] ((rand-nth generators))))
 
 (defn list-of
   "Create a list of items taken at random from generators. List
@@ -47,7 +46,7 @@
   (let [data-name (data-name-for-generator-coll sym)]
     `(do
        (def ~data-name ~coll)
-       (defn ~sym [] (rand-elt ~data-name)))))
+       (defn ~sym [] (rand-nth ~data-name)))))
 
 (defmacro char-generator
   [sym form]
@@ -69,7 +68,7 @@
   "Randomly selects one of the classes in the given namespace."
   ([] (class-symbol *ns*))
   ([in-namespace]
-    (rand-elt (keys (ns-imports in-namespace)))))
+    (rand-nth (keys (ns-imports in-namespace)))))
 
 (def *generated-values* nil)
 
